@@ -69,11 +69,12 @@ public class LoginHelper {
                 }
             }
             if (!found) {
-                System.err.println("No such profile!");
+                System.err.println("No such profile! (Case sensitive!)");
                 System.exit(1);
             }
             System.out.println("Logging in as " + profileToUse.getUsername() + "... Updating access token as needed...");
             if (!MCAuthUtils.validate(profileToUse.getAccessToken())) {
+//            if (false) {
                 System.out.println("Invalid token! Refreshing....");
                 MCAuthUtils.refresh(profileToUse.getAccessToken(), profileToUse.getProfileData());
             } else {

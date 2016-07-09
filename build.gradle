@@ -34,6 +34,12 @@ task genJava() {
     bi << "}"
 }
 
+jar {
+    manifest {
+        attributes("Implementation-Title": project.name,
+                "Implementation-Version": getVersionID(),
+                "Main-Class": "com.eyeball.modlauncher.ModLauncher")
+    }
+}
+
 archivesBaseName = "ModLauncher-${getVersionID()}"
-
-

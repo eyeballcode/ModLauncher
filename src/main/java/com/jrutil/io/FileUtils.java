@@ -1,5 +1,8 @@
 package com.jrutil.io;
 
+import com.eyeball.modlauncher.info.OSType;
+
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -8,6 +11,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 public class FileUtils {
+
 
     public static void removeRecursive(Path path) throws IOException {
         Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
@@ -34,5 +38,17 @@ public class FileUtils {
                 }
             }
         });
+    }
+
+    public static File getTmpDir() {
+        switch (OSType.getOS()) {
+            case WINDOWS:
+                String path = System.getenv().getOrDefault("%TEMP%", "C:\\tmp");
+                File tmp = new File(path);
+                tmp.mkdirs();
+                return tmp;
+            default:
+                return new File("/tmp");
+        }
     }
 }

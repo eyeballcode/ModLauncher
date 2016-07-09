@@ -21,13 +21,28 @@ public class FileHelper {
                 return new File(System.getProperty("user.home") + "/Library/Application Support/MCLauncher");
             case LINUX:
             case OTHER:
+            default:
                 return new File(System.getProperty("user.home") + "/.MCLauncher");
         }
-        return new File(System.getProperty("user.home") + "/.MCLauncher");
+    }
+
+    public static File getMCDir() {
+        switch (OSType.getOS()) {
+            case WINDOWS:
+                return new File(System.getProperty("user.home") + "\\%APPDATA%\\Roaming\\.minecraft");
+            case MAC:
+                return new File(System.getProperty("user.home") + "/Library/Application Support/minecraft");
+            case LINUX:
+            case OTHER:
+            default:
+                return new File(System.getProperty("user.home") + "/.minecraft");
+        }
     }
 
     public static void initFilesAsNeeded() {
         File root = getMCLDir();
+        if (!root.exists()) root.mkdirs();
+        root = getMCDir();
         if (!root.exists()) root.mkdirs();
         JSONObject filesList = new JSONObject(new JSONTokener(FileHelper.class.getResourceAsStream("/files.json")));
         for (String fileName : filesList.keySet()) {
@@ -37,6 +52,8 @@ public class FileHelper {
             if (!fileObj.exists()) {
                 if (expectedFormat.equals("json"))
                     createFile(fileObj, "{}");
+                else if (expectedFormat.equals("dir"))
+                    fileObj.mkdirs();
                 else
                     createFile(fileObj);
             }
@@ -81,13 +98,11 @@ public class FileHelper {
             }
         }
         for (JSONObject object : filesQueued) {
-            System.out.println("Download " + object.getString("location"));
-            DownloadUtil.hashedDownload(object.getString("sha1sum"), object.getString("location"), new File(getMCLDir(), object.getString("name")));
+            DownloadUtil.hashedDownload(object.getString("sha1sum"), object.getString("location"), new File(getMCLDir(), object.getString("name")), 5);
         }
     }
 
-    private static String calcSHA1(File file) throws IOException, NoSuchAlgorithmException {
-
+    public static String calcSHA1(File file) throws IOException, NoSuchAlgorithmException {
         MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
         try (InputStream input = new FileInputStream(file)) {
 
@@ -103,7 +118,7 @@ public class FileHelper {
         }
     }
 
-    private static boolean hashMatch(File check, String sha1sum) {
+    public static boolean hashMatch(File check, String sha1sum) {
         try {
             return calcSHA1(check).equals(sha1sum);
         } catch (IOException | NoSuchAlgorithmException e) {
@@ -111,4 +126,20 @@ public class FileHelper {
         }
         return false;
     }
+
+    public static String read(File file) {
+        DataInputStream inputStream = null;
+        try {
+            inputStream = new DataInputStream(new FileInputStream(file));
+            byte[] bytes = new byte[inputStream.available()];
+            inputStream.readFully(bytes);
+            return new String(bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
 }
+
+

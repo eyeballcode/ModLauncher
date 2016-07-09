@@ -4,5 +4,8 @@
   },
   "auth.json": {
     "format": "json"
+  },
+  "versionsCache": {
+    "format": "dir"
   }
 }
