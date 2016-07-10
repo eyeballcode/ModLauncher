@@ -112,10 +112,9 @@ public class ModPackHelper {
             p.append("-");
             p.append(parts[2]);
             if (parts[1].equals("forge")) {
-                p.append("-universal.jar");
                 File outputFile = new File(new File(FileHelper.getMCDir(), "libraries"), p.toString());
                 outputFile.getParentFile().mkdirs();
-                DownloadUtil.downloadFile(baseURL + p.toString(), outputFile);
+                DownloadUtil.downloadFile(baseURL + p.toString() + "-universal.jar", outputFile);
             } else {
                 p.append(".jar");
                 if (lib.has("url")) p.append(".pack.xz");
@@ -126,7 +125,7 @@ public class ModPackHelper {
                     try {
                         XZInputStream input = new XZInputStream(new FileInputStream(outputFile));
                         ReadableByteChannel rbc = Channels.newChannel(input);
-                        FileOutputStream fos = new FileOutputStream(new File(outputFile.getName().substring(0, outputFile.getName().length() - ".pack.xz".length())));
+                        FileOutputStream fos = new FileOutputStream(new File(new File(FileHelper.getMCDir(), "libraries"), outputFile.getName().substring(0, outputFile.getName().length() - ".pack.xz".length())));
                         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
                         System.out.println("Unpacked " + outputFile.getName());
                     } catch (IOException e) {
@@ -134,31 +133,6 @@ public class ModPackHelper {
                     }
                 }
             }
-        }
-//        launchForgeInstaller(forgeDownload);
-    }
-
-    private static void launchForgeInstaller(File forgeJar) {
-        ArrayList<String> command = new ArrayList<>();
-        command.add("java");
-        command.add("-cp");
-        command.add(forgeJar.getAbsolutePath() + ":.");
-        command.add("Launcher");
-        command.add(FileHelper.getMCDir().getAbsolutePath());
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
-        processBuilder.directory(FileHelper.getMCLDir());
-        processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-        try {
-            System.out.println("Launching MC Forge Installer");
-            Process process = processBuilder.start();
-            synchronized (process) {
-                try {
-                    process.waitFor();
-                } catch (InterruptedException ignored) {
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -245,7 +219,6 @@ public class ModPackHelper {
         System.out.println("");
         try {
             Process process = processBuilder.start();
-            process.destroyForcibly();
             synchronized (process) {
                 process.waitFor();
             }
