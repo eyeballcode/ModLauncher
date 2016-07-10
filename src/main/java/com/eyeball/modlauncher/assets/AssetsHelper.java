@@ -21,7 +21,9 @@ public class AssetsHelper {
         JSONObject versionManifest = new JSONObject(FileHelper.read(versionsCache));
 
         JSONObject clientLibraryDownloadInfo = versionManifest.getJSONObject("downloads").getJSONObject("client");
-        DownloadUtil.hashedDownload(clientLibraryDownloadInfo.getString("sha1"), clientLibraryDownloadInfo.getString("url"), new File(new File(new File(FileHelper.getMCDir(), "versions"), mcVersion), mcVersion + ".jar"), 3);
+        File mcClientFile = new File(new File(new File(FileHelper.getMCDir(), "versions"), mcVersion), mcVersion + ".jar");
+        mcClientFile.getParentFile().mkdirs();
+        DownloadUtil.hashedDownload(clientLibraryDownloadInfo.getString("sha1"), clientLibraryDownloadInfo.getString("url"), mcClientFile, 3);
 
         String assetsURL = versionManifest.getJSONObject("assetIndex").getString("url"),
                 assetsURLHash = versionManifest.getJSONObject("assetIndex").getString("sha1");

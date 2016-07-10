@@ -14,8 +14,11 @@ public class DownloadUtil {
 
     public static void hashedDownload(String sha1sum, String location, File output, int tries) {
         if (output.exists()) {
-            System.out.println("Skipping " + location);
-            if (matchesSHA1(output, sha1sum)) return;
+            if (matchesSHA1(output, sha1sum)) {
+                System.out.println("Skipping " + location);
+                return;
+            } else
+                output.delete();
         }
         for (int t = 0; t < tries; t++) {
             System.out.println("Download " + location + " (Try " + (t + 1) + " / " + tries + ")");

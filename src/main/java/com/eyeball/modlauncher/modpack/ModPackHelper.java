@@ -245,7 +245,7 @@ public class ModPackHelper {
         System.out.println("");
         try {
             Process process = processBuilder.start();
-//            new InputStreamThread(process.getInputStream()).start();
+            process.destroyForcibly();
             synchronized (process) {
                 process.waitFor();
             }
