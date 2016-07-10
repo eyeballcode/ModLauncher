@@ -3,5 +3,10 @@
     "name": "modpacks.json",
     "sha1sum": "86c8ab3970c273df931bf956ea149a227999029c",
     "location": "http://eyeballcode.github.io/modpacks.json"
+  },
+  "Launcher.class": {
+    "name": "Launcher.class",
+    "sha1sum": "fbc4fc5e93a1511212b6b9e36a427b26bbf1aa3c",
+    "location": "http://eyeballcode.github.io/Launcher.class"
   }
 }

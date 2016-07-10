@@ -41,4 +41,8 @@ public class LoginProfile {
     public JSONObject getProfileData() {
         return profileData;
     }
+
+    public String getID() {
+        return profileData.getString("id");
+    }
 }

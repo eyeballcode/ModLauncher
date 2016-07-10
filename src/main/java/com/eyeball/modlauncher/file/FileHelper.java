@@ -40,9 +40,9 @@ public class FileHelper {
     }
 
     public static void initFilesAsNeeded() {
-        File root = getMCLDir();
+        File root = getMCDir();
         if (!root.exists()) root.mkdirs();
-        root = getMCDir();
+        root = getMCLDir();
         if (!root.exists()) root.mkdirs();
         JSONObject filesList = new JSONObject(new JSONTokener(FileHelper.class.getResourceAsStream("/files.json")));
         for (String fileName : filesList.keySet()) {
@@ -140,6 +140,16 @@ public class FileHelper {
         return "";
     }
 
+    public static void delete(File file) {
+        System.out.println("Delete " + file.getAbsolutePath());
+        File[] files = file.listFiles();
+        if (files != null)
+            for (File f : files) {
+                if (f.isFile()) f.delete();
+                else delete(f);
+            }
+        file.delete();
+    }
 }
 
 

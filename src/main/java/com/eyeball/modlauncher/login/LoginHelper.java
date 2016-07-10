@@ -15,7 +15,7 @@ public class LoginHelper {
 
     private static ArrayList<LoginProfile> profiles = new ArrayList<>();
 
-    private static LoginProfile USED_PROFILE;
+    public static LoginProfile USED_PROFILE;
 
     public static void loginIfNeeded() {
         loadProfileAndLogin();
@@ -134,7 +134,7 @@ public class LoginHelper {
     private static void showLogin() {
         try {
             String username = TerminalHelper.read("[Login] Username: ");
-            String password = TerminalHelper.read("[Login] Password: ");
+            String password = TerminalHelper.readPassword("[Login] Password: ");
             MCAuthUtils.login(username, password);
         } catch (IOException e) {
         }

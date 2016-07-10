@@ -32,25 +32,10 @@ public class AssetsHelper {
         downloadLibraries(versionManifest);
     }
 
-    //[--userProperties, {}, --assetsDir, /home/eyeballcode/.gradle/caches/minecraft/assets, --assetIndex, 1.7.10, --accessToken, {REDACTED}, --version, 1.7.10, --tweakClass, cpw.mods.fml.common.launcher.FMLTweaker, --tweakClass, net.minecraftforge.gradle.tweakers.CoremodTweaker]
-
     private static void downloadLibraries(JSONObject versionManifest) {
         JSONArray librariesList = versionManifest.getJSONArray("libraries");
-        for (Object _ : librariesList) {
-            JSONObject library = (JSONObject) _;
-            if (library.has("natives")) {
-                downloadNative(library);
-            } else {
-                JSONObject downloadInfo = library.getJSONObject("downloads").getJSONObject("artifact");
-                File output = new File(new File(FileHelper.getMCDir(), "libraries"), downloadInfo.getString("path"));
-                output.getParentFile().mkdirs();
-                DownloadUtil.hashedDownload(downloadInfo.getString("sha1"), downloadInfo.getString("url"), output, 5);
-            }
-        }
-    }
-
-    private static void downloadNative(JSONObject library) {
-
+        LibrarySet librarySet = new LibrarySet(librariesList, versionManifest);
+        librarySet.download();
     }
 
     private static void downloadAssets(JSONObject assetsManifest) {

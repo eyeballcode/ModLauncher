@@ -53,6 +53,10 @@ public class DownloadUtil {
     }
 
     public static void downloadFile(String location, File name) {
+        if (name.exists()) {
+            System.out.println("Skipped " + location + ", assuming local file good.");
+            return;
+        }
         URL website = null;
         try {
             website = new URL(location);
