@@ -90,51 +90,79 @@ public class ModPackHelper {
             Utils.extractZip(extractDir, forgeDownload);
         } catch (IOException ignored) {
         }
+        launchForgeInstaller(forgeDownload);
+//
+//        JSONObject forge = new JSONObject(FileHelper.read(new File(new File(FileUtils.getTmpDir(), forge_ver), "install_profile.json")));
+//        JSONArray forgeLibs = forge.getJSONObject("versionInfo").getJSONArray("libraries");
+//        for (Object _ : forgeLibs) {
+//            JSONObject lib = (JSONObject) _;
+//            String name = lib.getString("name");
+//            String[] parts = name.split(":");
+//
+//            StringBuilder p = new StringBuilder();
+//
+//            String baseURL = "https://libraries.minecraft.net/";
+//            if (lib.has("url")) baseURL = lib.getString("url");
+//            p.append(parts[0].replaceAll("\\.", "/"));
+//            p.append("/");
+//            p.append(parts[1]);
+//            p.append("/");
+//            p.append(parts[2]);
+//            p.append("/");
+//            p.append(parts[1]);
+//            p.append("-");
+//            p.append(parts[2]);
+//            if (parts[1].equals("forge")) {
+//                File outputFile = new File(new File(FileHelper.getMCDir(), "libraries"), p.toString() + ".jar");
+//                outputFile.getParentFile().mkdirs();
+//                DownloadUtil.downloadFile(baseURL + p.toString() + "-universal.jar", outputFile);
+//            } else {
+//                p.append(".jar");
+//                String url = p.toString();
+//                if (lib.has("url")) url += ".pack.xz";
+//                File outputFile = new File(new File(FileHelper.getMCDir(), "libraries"), url);
+//                outputFile.getParentFile().mkdirs();
+//                DownloadUtil.downloadFile(baseURL + url, outputFile);
+//                if (lib.has("url")) {
+//                    try {
+//                        File inputFile = new File(new File(FileHelper.getMCDir(), "libraries"), p.toString());
+//                        System.out.println(inputFile);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        }
 
-        JSONObject forge = new JSONObject(FileHelper.read(new File(new File(FileUtils.getTmpDir(), forge_ver), "install_profile.json")));
-        JSONArray forgeLibs = forge.getJSONObject("versionInfo").getJSONArray("libraries");
-        for (Object _ : forgeLibs) {
-            JSONObject lib = (JSONObject) _;
-            String name = lib.getString("name");
-            String[] parts = name.split(":");
+    }
 
-            StringBuilder p = new StringBuilder();
-
-            String baseURL = "https://libraries.minecraft.net/";
-            if (lib.has("url")) baseURL = lib.getString("url");
-            p.append(parts[0].replaceAll("\\.", "/"));
-            p.append("/");
-            p.append(parts[1]);
-            p.append("/");
-            p.append(parts[2]);
-            p.append("/");
-            p.append(parts[1]);
-            p.append("-");
-            p.append(parts[2]);
-            if (parts[1].equals("forge")) {
-                File outputFile = new File(new File(FileHelper.getMCDir(), "libraries"), p.toString() + ".jar");
-                outputFile.getParentFile().mkdirs();
-                DownloadUtil.downloadFile(baseURL + p.toString() + "-universal.jar", outputFile);
-            } else {
-                p.append(".jar");
-                String url = p.toString();
-                if (lib.has("url")) url += ".pack.xz";
-                File outputFile = new File(new File(FileHelper.getMCDir(), "libraries"), url);
-                outputFile.getParentFile().mkdirs();
-                DownloadUtil.downloadFile(baseURL + url, outputFile);
-                if (lib.has("url")) {
-                    try {
-                        XZInputStream input = new XZInputStream(new FileInputStream(outputFile));
-                        ReadableByteChannel rbc = Channels.newChannel(input);
-                        File extractOutput = new File(new File(FileHelper.getMCDir(), "libraries"), p.toString());
-                        FileOutputStream fos = new FileOutputStream(extractOutput);
-                        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-                        System.out.println("Unpacked " + outputFile.getAbsolutePath() + " to " + extractOutput.getAbsolutePath());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+    private static void launchForgeInstaller(File forgeJar) {
+        ArrayList<String> command = new ArrayList<>();
+        command.add("java");
+        command.add("-cp");
+        command.add(forgeJar.getAbsolutePath() + ":.");
+        command.add("Launcher");
+        command.add(FileHelper.getMCDir().getAbsolutePath());
+        System.out.println(command);
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        processBuilder.directory(FileHelper.getMCLDir());
+        processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+        try {
+            File launcherProfiles = new File(FileHelper.getMCDir(), "launcher_profiles.json");
+            if (!launcherProfiles.exists()) {
+                FileHelper.createFile(launcherProfiles, "{}");
+            }
+            System.out.println("Launching MC Forge Installer");
+            Process process = processBuilder.start();
+            synchronized (process) {
+                try {
+                    process.waitFor();
+                } catch (InterruptedException ignored) {
+                    ignored.printStackTrace();
                 }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -220,13 +248,13 @@ public class ModPackHelper {
             System.out.print(s + " ");
         }
         System.out.println("");
-        try {
-            Process process = processBuilder.start();
-            synchronized (process) {
-                process.waitFor();
-            }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Process process = processBuilder.start();
+//            synchronized (process) {
+//                process.waitFor();
+//            }
+//        } catch (IOException | InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 }
