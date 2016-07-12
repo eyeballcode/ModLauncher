@@ -43,7 +43,7 @@ public class FileUtils {
     public static File getTmpDir() {
         switch (OSType.getOS()) {
             case WINDOWS:
-                String path = System.getenv().getOrDefault("%TEMP%", "C:\\tmp");
+                String path = System.getenv().get("%TEMP%");
                 File tmp = new File(path);
                 tmp.mkdirs();
                 return tmp;

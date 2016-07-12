@@ -29,6 +29,9 @@ public class AssetsHelper {
                 assetsURLHash = versionManifest.getJSONObject("assetIndex").getString("sha1");
         File assetsManifestFile = new File(new File(FileHelper.getMCLDir(), "versionsCache"), mcVersion + "_assets.json");
         DownloadUtil.hashedDownload(assetsURLHash, assetsURL, assetsManifestFile, 5);
+        File outputCopy = new File(new File(new File(FileHelper.getMCDir(), "assets"), "indexes"), mcVersion + ".json");
+        outputCopy.getParentFile().mkdirs();
+        DownloadUtil.hashedDownload(assetsURLHash, assetsURL, outputCopy, 5);
         JSONObject assetsManifest = new JSONObject(FileHelper.read(assetsManifestFile));
         downloadAssets(assetsManifest);
         downloadLibraries(versionManifest);

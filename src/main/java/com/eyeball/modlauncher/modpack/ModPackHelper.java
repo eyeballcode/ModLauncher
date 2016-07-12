@@ -112,22 +112,24 @@ public class ModPackHelper {
             p.append("-");
             p.append(parts[2]);
             if (parts[1].equals("forge")) {
-                File outputFile = new File(new File(FileHelper.getMCDir(), "libraries"), p.toString());
+                File outputFile = new File(new File(FileHelper.getMCDir(), "libraries"), p.toString() + ".jar");
                 outputFile.getParentFile().mkdirs();
                 DownloadUtil.downloadFile(baseURL + p.toString() + "-universal.jar", outputFile);
             } else {
                 p.append(".jar");
-                if (lib.has("url")) p.append(".pack.xz");
-                File outputFile = new File(new File(FileHelper.getMCDir(), "libraries"), p.toString());
+                String url = p.toString();
+                if (lib.has("url")) url += ".pack.xz";
+                File outputFile = new File(new File(FileHelper.getMCDir(), "libraries"), url);
                 outputFile.getParentFile().mkdirs();
-                DownloadUtil.downloadFile(baseURL + p.toString(), outputFile);
+                DownloadUtil.downloadFile(baseURL + url, outputFile);
                 if (lib.has("url")) {
                     try {
                         XZInputStream input = new XZInputStream(new FileInputStream(outputFile));
                         ReadableByteChannel rbc = Channels.newChannel(input);
-                        FileOutputStream fos = new FileOutputStream(new File(new File(FileHelper.getMCDir(), "libraries"), outputFile.getName().substring(0, outputFile.getName().length() - ".pack.xz".length())));
+                        File extractOutput = new File(new File(FileHelper.getMCDir(), "libraries"), p.toString());
+                        FileOutputStream fos = new FileOutputStream(extractOutput);
                         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-                        System.out.println("Unpacked " + outputFile.getName());
+                        System.out.println("Unpacked " + outputFile.getAbsolutePath() + " to " + extractOutput.getAbsolutePath());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -162,6 +164,7 @@ public class ModPackHelper {
         String jar = loadInfo.jarFile,
                 main = loadInfo.mainClass,
                 args = loadInfo.args;
+        JSONObject modpack = new JSONObject(FileHelper.read(new File(FileHelper.getMCLDir(), "modpacks.json"))).getJSONObject(loadInfo.modpackName);
         args = args
                 .replaceAll("\\$\\{auth_player_name\\}", LoginHelper.USED_PROFILE.getUsername())
                 .replaceAll("\\$\\{version_name\\}", loadInfo.mcVer)
@@ -204,7 +207,7 @@ public class ModPackHelper {
         ArrayList<String> command = new ArrayList<>();
         command.add("java");
         command.add("-cp");
-        command.add(librarySet.classpathFormat() + ":" + jar + (modded ? ":" + forgeLibsCP.substring(0, forgeLibsCP.length() - 1) : ""));
+        command.add(librarySet.classpathFormat(modpack.getJSONArray("drop")) + ":" + jar + (modded ? ":" + forgeLibsCP.substring(0, forgeLibsCP.length() - 1) : ""));
         command.add("-Djava.library.path=" + new File(new File(new File(FileHelper.getMCDir(), "versions"), loadInfo.mcVer), "natives").getAbsolutePath());
         command.add(main);
         for (String part : args.split(" ")) {
