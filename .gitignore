@@ -8,3 +8,5 @@ gradle-app.setting
 .gradletasknamecache
 settings.gradle
 *.swp
+asm
+logs

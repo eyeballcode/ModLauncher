@@ -5,6 +5,7 @@ import com.eyeball.modlauncher.assets.LibrarySet;
 import com.eyeball.modlauncher.file.FileHelper;
 import com.eyeball.modlauncher.login.LoginHelper;
 import com.eyeball.modlauncher.util.DownloadUtil;
+import com.eyeball.modlauncher.util.StringUtils;
 import com.eyeball.modlauncher.util.Utils;
 import com.jrutil.TerminalHelper;
 import com.jrutil.io.FileUtils;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ModPackHelper {
 
@@ -91,38 +93,40 @@ public class ModPackHelper {
         } catch (IOException ignored) {
         }
         launchForgeInstaller(forgeDownload);
-//
-//        JSONObject forge = new JSONObject(FileHelper.read(new File(new File(FileUtils.getTmpDir(), forge_ver), "install_profile.json")));
-//        JSONArray forgeLibs = forge.getJSONObject("versionInfo").getJSONArray("libraries");
-//        for (Object _ : forgeLibs) {
-//            JSONObject lib = (JSONObject) _;
-//            String name = lib.getString("name");
-//            String[] parts = name.split(":");
-//
-//            StringBuilder p = new StringBuilder();
-//
-//            String baseURL = "https://libraries.minecraft.net/";
-//            if (lib.has("url")) baseURL = lib.getString("url");
-//            p.append(parts[0].replaceAll("\\.", "/"));
-//            p.append("/");
-//            p.append(parts[1]);
-//            p.append("/");
-//            p.append(parts[2]);
-//            p.append("/");
-//            p.append(parts[1]);
-//            p.append("-");
-//            p.append(parts[2]);
-//            if (parts[1].equals("forge")) {
-//                File outputFile = new File(new File(FileHelper.getMCDir(), "libraries"), p.toString() + ".jar");
-//                outputFile.getParentFile().mkdirs();
-//                DownloadUtil.downloadFile(baseURL + p.toString() + "-universal.jar", outputFile);
-//            } else {
-//                p.append(".jar");
-//                String url = p.toString();
+
+        JSONObject forge = new JSONObject(FileHelper.read(new File(new File(FileUtils.getTmpDir(), forge_ver), "install_profile.json")));
+        JSONArray forgeLibs = forge.getJSONObject("versionInfo").getJSONArray("libraries");
+        for (Object _ : forgeLibs) {
+            JSONObject lib = (JSONObject) _;
+            String name = lib.getString("name");
+            String[] parts = name.split(":");
+
+            StringBuilder p = new StringBuilder();
+
+            String baseURL = "https://libraries.minecraft.net/";
+            if (lib.has("url")) baseURL = lib.getString("url");
+            p.append(parts[0].replaceAll("\\.", "/"));
+            p.append("/");
+            p.append(parts[1]);
+            p.append("/");
+            p.append(parts[2]);
+            p.append("/");
+            p.append(parts[1]);
+            p.append("-");
+            p.append(parts[2]);
+            if (parts[1].equals("forge")) {
+                File outputFile = new File(new File(FileHelper.getMCDir(), "libraries"), p.toString() + ".jar");
+                outputFile.getParentFile().mkdirs();
+                DownloadUtil.downloadFile(baseURL + p.toString() + "-universal.jar", outputFile);
+            } else {
+                p.append(".jar");
+                String url = p.toString();
+                if (lib.has("url")) continue;
 //                if (lib.has("url")) url += ".pack.xz";
-//                File outputFile = new File(new File(FileHelper.getMCDir(), "libraries"), url);
-//                outputFile.getParentFile().mkdirs();
-//                DownloadUtil.downloadFile(baseURL + url, outputFile);
+
+                File outputFile = new File(new File(FileHelper.getMCDir(), "libraries"), url);
+                outputFile.getParentFile().mkdirs();
+                DownloadUtil.downloadFile(baseURL + url, outputFile);
 //                if (lib.has("url")) {
 //                    try {
 //                        File inputFile = new File(new File(FileHelper.getMCDir(), "libraries"), p.toString());
@@ -131,8 +135,8 @@ public class ModPackHelper {
 //                        e.printStackTrace();
 //                    }
 //                }
-//            }
-//        }
+            }
+        }
 
     }
 
@@ -237,6 +241,8 @@ public class ModPackHelper {
         command.add("-cp");
         command.add(librarySet.classpathFormat(modpack.getJSONArray("drop")) + ":" + jar + (modded ? ":" + forgeLibsCP.substring(0, forgeLibsCP.length() - 1) : ""));
         command.add("-Djava.library.path=" + new File(new File(new File(FileHelper.getMCDir(), "versions"), loadInfo.mcVer), "natives").getAbsolutePath());
+        List<String> extraArgs = askForExtra();
+        command.addAll(extraArgs);
         command.add(main);
         for (String part : args.split(" ")) {
             command.add(part);
@@ -248,13 +254,41 @@ public class ModPackHelper {
             System.out.print(s + " ");
         }
         System.out.println("");
+        Process process = null;
         try {
-            Process process = processBuilder.start();
+            process = processBuilder.start();
             synchronized (process) {
                 process.waitFor();
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+            if (process != null)
+                process.destroy();
+            System.exit(0);
         }
+    }
+
+    private static List<String> askForExtra() {
+        ArrayList<String> e = new ArrayList<>();
+        try {
+            System.out.println("Extra java options: (Leave blank for none)");
+            String maxram = TerminalHelper.read("How much max ram? (eg: 512M, 1G, 64G...) ");
+            String minram = TerminalHelper.read("How much min ram? (eg: 512M, 1G, 64G, 128K...) ");
+            String permGen = TerminalHelper.read("How much space for PermGen? (eg: 512M, 1G, 64G...) ");
+            if (StringUtils.isNotNullOrEmpty(maxram)) {
+                e.add("-Xmx" + maxram);
+            }
+            if (StringUtils.isNotNullOrEmpty(minram)) {
+                e.add("-Xms" + minram);
+            }
+            if (StringUtils.isNotNullOrEmpty(permGen)) {
+                e.add("-XX:MaxPermSize=" + permGen);
+            }
+            e.add("-XX:+UseConcMarkSweepGC");
+            e.add("-XX:+UseParNewGC");
+            e.add("-XX:+CMSParallelRemarkEnabled");
+        } catch (IOException e1) {
+        }
+        return e;
     }
 }
