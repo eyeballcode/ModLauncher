@@ -248,13 +248,13 @@ public class ModPackHelper {
             System.out.print(s + " ");
         }
         System.out.println("");
-//        try {
-//            Process process = processBuilder.start();
-//            synchronized (process) {
-//                process.waitFor();
-//            }
-//        } catch (IOException | InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            Process process = processBuilder.start();
+            synchronized (process) {
+                process.waitFor();
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
