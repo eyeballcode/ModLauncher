@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -175,7 +176,7 @@ public class ModPackHelper {
         File modpackFile = new File(modpackDir, "Modpack.zip");
         try {
             Utils.extractZip(modpackDir, modpackFile);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -184,7 +185,22 @@ public class ModPackHelper {
 
     private static void downloadModpackFile(JSONObject modpackObj, String name) {
         File modpackDir = new File(new File(FileHelper.getMCLDir(), "modpacks"), name);
-        DownloadUtil.hashedDownload(modpackObj.getString("fileSHA1Sum"), modpackObj.getString("location"), new File(modpackDir, "Modpack.zip"), 3);
+        File modpackFile = new File(modpackDir, "Modpack.zip");
+        if (modpackFile.exists()) {
+            try {
+                if (DownloadUtil.calcSHA1(modpackFile).equals(modpackObj.getString("fileSHA1Sum")))
+                    return;
+                else {
+                    System.out.println("Modpack update!");
+                    FileHelper.delete(new File(modpackDir, "mods"));
+                    FileHelper.delete(new File(modpackDir, "config"));
+                    modpackFile.delete();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        DownloadUtil.hashedDownload(modpackObj.getString("fileSHA1Sum"), modpackObj.getString("location"), modpackFile, 3);
     }
 
     private static void createModpackDirs(String name) {
