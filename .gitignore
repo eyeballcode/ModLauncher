@@ -10,3 +10,4 @@ settings.gradle
 *.swp
 asm
 logs
+saves/
