@@ -29,6 +29,7 @@ public class Utils {
                 new File(outputDir, entry.getName()).mkdirs();
             } else {
                 File file = new File(outputDir, entry.getName());
+                file.getParentFile().mkdirs();
                 if (file.exists()) {
                     long required = entry.getSize(),
                             existing = file.length();
@@ -39,13 +40,17 @@ public class Utils {
                     }
                 }
 
-                InputStream input = zip.getInputStream(entry);
-                FileOutputStream outputStream = new FileOutputStream(file);
-                ReadableByteChannel rbc = Channels.newChannel(input);
-                outputStream.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+                try {
+                    InputStream input = zip.getInputStream(entry);
+                    FileOutputStream outputStream = new FileOutputStream(file);
+                    ReadableByteChannel rbc = Channels.newChannel(input);
+                    outputStream.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 
-                count++;
-                System.out.println("Progress: " + count / numberOfFiles * 100 + "% [Unzipped " + entry.getName() + "]");
+                    count++;
+                    System.out.println("Progress: " + count / numberOfFiles * 100 + "% [Unzipped " + entry.getName() + "]");
+                } catch (Exception e) {
+
+                }
             }
         }
     }
