@@ -1,7 +1,7 @@
 {
   "modpacks.json": {
     "name": "modpacks.json",
-    "sha1sum": "5f68ef705b890914c8693ba8809cc74824b0c93c",
+    "alwaysRefresh": true,
     "location": "http://eyeballcode.github.io/modpacks.json"
   },
   "Launcher.class": {

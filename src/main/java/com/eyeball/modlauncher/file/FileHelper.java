@@ -87,6 +87,13 @@ public class FileHelper {
         JSONObject files = new JSONObject(new JSONTokener(FileHelper.class.getResourceAsStream("/static.json")));
         for (String fileName : files.keySet()) {
             JSONObject object = files.getJSONObject(fileName);
+            if (object.has("alwaysRefresh")) {
+                if (object.getBoolean("alwaysRefresh")) {
+                    System.out.println("Redownloading " + object.getString("name"));
+                    filesQueued.add(object);
+                }
+                continue;
+            }
             if (new File(getMCLDir(), fileName).exists()) {
                 if (!hashMatch(new File(getMCLDir(), fileName), object.getString("sha1sum"))) {
                     System.out.println("Queued file " + fileName + " to redownload.");
@@ -98,7 +105,12 @@ public class FileHelper {
             }
         }
         for (JSONObject object : filesQueued) {
-            DownloadUtil.hashedDownload(object.getString("sha1sum"), object.getString("location"), new File(getMCLDir(), object.getString("name")), 5);
+            File output = new File(getMCLDir(), object.getString("name"));
+            output.delete();
+            if (object.has("alwaysRefresh"))
+                DownloadUtil.downloadFile(object.getString("location"), output);
+            else
+                DownloadUtil.hashedDownload(object.getString("sha1sum"), object.getString("location"), output, 5);
         }
     }
 

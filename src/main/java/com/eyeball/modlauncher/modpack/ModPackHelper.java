@@ -12,15 +12,10 @@ import com.jrutil.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.tukaani.xz.XZInputStream;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -257,6 +252,7 @@ public class ModPackHelper {
         command.add("-cp");
         command.add(librarySet.classpathFormat(modpack.getJSONArray("drop")) + ":" + jar + (modded ? ":" + forgeLibsCP.substring(0, forgeLibsCP.length() - 1) : ""));
         command.add("-Djava.library.path=" + new File(new File(new File(FileHelper.getMCDir(), "versions"), loadInfo.mcVer), "natives").getAbsolutePath());
+        command.add("-Duser.dir=" + new File(new File(FileHelper.getMCLDir(), "modpacks"), loadInfo.modpackName));
         List<String> extraArgs = askForExtra();
         command.addAll(extraArgs);
         command.add(main);
