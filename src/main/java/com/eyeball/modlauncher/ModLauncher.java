@@ -15,7 +15,7 @@ public class ModLauncher {
         FileHelper.downloadFiles();
         LoginHelper.loginIfNeeded();
         LoadInfo loadInfo = ModPackHelper.requestVersion();
-        ModPackHelper.launch(loadInfo);
+//        ModPackHelper.launch(loadInfo);
     }
 
 }

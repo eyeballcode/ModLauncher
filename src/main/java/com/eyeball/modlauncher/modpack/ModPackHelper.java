@@ -123,6 +123,7 @@ public class ModPackHelper {
                 outputFile.getParentFile().mkdirs();
                 if (lib.has("url")) {
                     url += ".pack.xz";
+                    outputFile = new File(new File(FileHelper.getMCDir(), "libraries"), url);
                     try {
                         ForgeLibUtil.downloadForgeLib(baseURL + url, outputFile);
                     } catch (IOException | NoSuchAlgorithmException e) {
