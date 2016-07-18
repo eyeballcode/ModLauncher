@@ -5,6 +5,7 @@ import com.eyeball.modlauncher.assets.LibrarySet;
 import com.eyeball.modlauncher.file.FileHelper;
 import com.eyeball.modlauncher.login.LoginHelper;
 import com.eyeball.modlauncher.util.DownloadUtil;
+import com.eyeball.modlauncher.util.ForgeLibUtil;
 import com.eyeball.modlauncher.util.StringUtils;
 import com.eyeball.modlauncher.util.Utils;
 import com.jrutil.TerminalHelper;
@@ -16,6 +17,7 @@ import org.json.JSONTokener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,7 +90,7 @@ public class ModPackHelper {
             Utils.extractZip(extractDir, forgeDownload);
         } catch (IOException ignored) {
         }
-        launchForgeInstaller(forgeDownload);
+//        launchForgeInstaller(forgeDownload);
 
         JSONObject forge = new JSONObject(FileHelper.read(new File(new File(FileUtils.getTmpDir(), forge_ver), "install_profile.json")));
         JSONArray forgeLibs = forge.getJSONObject("versionInfo").getJSONArray("libraries");
@@ -117,20 +119,17 @@ public class ModPackHelper {
             } else {
                 p.append(".jar");
                 String url = p.toString();
-                if (lib.has("url")) continue;
-//                if (lib.has("url")) url += ".pack.xz";
-
                 File outputFile = new File(new File(FileHelper.getMCDir(), "libraries"), url);
                 outputFile.getParentFile().mkdirs();
+                if (lib.has("url")) {
+                    url += ".pack.xz";
+                    try {
+                        ForgeLibUtil.downloadForgeLib(baseURL + url, outputFile);
+                    } catch (IOException | NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
+                } else
                 DownloadUtil.downloadFile(baseURL + url, outputFile);
-//                if (lib.has("url")) {
-//                    try {
-//                        File inputFile = new File(new File(FileHelper.getMCDir(), "libraries"), p.toString());
-//                        System.out.println(inputFile);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
             }
         }
 
@@ -252,7 +251,7 @@ public class ModPackHelper {
         command.add("-cp");
         command.add(librarySet.classpathFormat(modpack.getJSONArray("drop")) + ":" + jar + (modded ? ":" + forgeLibsCP.substring(0, forgeLibsCP.length() - 1) : ""));
         command.add("-Djava.library.path=" + new File(new File(new File(FileHelper.getMCDir(), "versions"), loadInfo.mcVer), "natives").getAbsolutePath());
-        command.add("-Duser.dir=" + new File(new File(FileHelper.getMCLDir(), "modpacks"), loadInfo.modpackName));
+//        command.add("-Duser.dir=" + new File(new File(FileHelper.getMCLDir(), "modpacks"), loadInfo.modpackName));
         List<String> extraArgs = askForExtra();
         command.addAll(extraArgs);
         command.add(main);

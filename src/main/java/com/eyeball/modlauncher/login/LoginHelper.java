@@ -13,9 +13,8 @@ import java.util.ArrayList;
 
 public class LoginHelper {
 
-    private static ArrayList<LoginProfile> profiles = new ArrayList<>();
-
     public static LoginProfile USED_PROFILE;
+    private static ArrayList<LoginProfile> profiles = new ArrayList<>();
 
     public static void loginIfNeeded() {
         loadProfileAndLogin();
@@ -134,7 +133,11 @@ public class LoginHelper {
     private static void showLogin() {
         try {
             String username = TerminalHelper.read("[Login] Username: ");
-            String password = TerminalHelper.readPassword("[Login] Password: ");
+            String password;
+            if (System.console() != null)
+                password = TerminalHelper.readPassword("[Login] Password: ");
+            else
+                password = TerminalHelper.read("[Login] Password (PLAINTEXT): ");
             MCAuthUtils.login(username, password);
         } catch (IOException e) {
         }

@@ -28,6 +28,22 @@ public class DownloadUtil {
         }
     }
 
+    public static String calcSHA1(byte[] bytes) throws NoSuchAlgorithmException, IOException {
+        MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+        try (InputStream input = new ByteArrayInputStream(bytes)) {
+
+            byte[] buffer = new byte[8192];
+            int len = input.read(buffer);
+
+            while (len != -1) {
+                sha1.update(buffer, 0, len);
+                len = input.read(buffer);
+            }
+
+            return new HexBinaryAdapter().marshal(sha1.digest()).toLowerCase();
+        }
+    }
+
     public static String calcSHA1(File file) throws IOException, NoSuchAlgorithmException {
         MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
         try (InputStream input = new FileInputStream(file)) {
@@ -62,6 +78,7 @@ public class DownloadUtil {
         }
         URL website = null;
         try {
+            System.out.println("Download " + location);
             website = new URL(location);
             ReadableByteChannel rbc = Channels.newChannel(website.openStream());
             FileOutputStream fos = new FileOutputStream(name);
