@@ -1,4 +1,4 @@
-.idea
+/.idea/
 /out/
 .idea_modules/
 .gradle
@@ -8,6 +8,6 @@ gradle-wrapper.jar
 .gradletasknamecache
 settings.gradle
 *.swp
-asm
-logs
-saves/
+/asm/
+/logs/
+/saves/
