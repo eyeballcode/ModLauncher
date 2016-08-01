@@ -24,15 +24,22 @@ public abstract class LibraryObject {
      */
     public abstract String getHostServer();
 
+    /**
+     * Parse the raw name of the package into an object storing the data.
+     *
+     * @return A <code>{@link LibraryObjectInfo}</code> containing info about the package
+     */
     public LibraryObjectInfo parseName() {
         Pattern regex = Pattern.compile("^([\\w.]+):([\\w\\-]+):(.+)$");
         Matcher matcher = regex.matcher(getRawName());
-        System.out.println(matcher.matches());
-        MatchResult result = matcher.toMatchResult();
-        String packageName = result.group(1),
-                libraryName = result.group(2),
-                version = result.group(3);
-        return new LibraryObjectInfo(libraryName, packageName, version);
+        if (matcher.matches()) {
+            MatchResult result = matcher.toMatchResult();
+            String packageName = result.group(1),
+                    libraryName = result.group(2),
+                    version = result.group(3);
+            return new LibraryObjectInfo(libraryName, packageName, version);
+        }
+        return null;
     }
 
 }

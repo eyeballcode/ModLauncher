@@ -1,5 +1,8 @@
 package lib.mc.library;
 
+/**
+ * A Forge Library Object, similar to <code>{@link DefaultMCLibraryObject}</code>.
+ */
 public class ForgeLibraryObject extends LibraryObject {
 
     private String rawName;
