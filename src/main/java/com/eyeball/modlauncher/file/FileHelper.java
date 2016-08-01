@@ -16,7 +16,7 @@ public class FileHelper {
     public static File getMCLDir() {
         switch (OSType.getOS()) {
             case WINDOWS:
-                return new File(System.getProperty("user.home") + "\\%APPDATA%\\Roaming\\MCLauncher");
+                return new File(System.getProperty("user.home") + "\\APPDATA\\Roaming\\MCLauncher");
             case MAC:
                 return new File(System.getProperty("user.home") + "/Library/Application Support/MCLauncher");
             case LINUX:
@@ -29,7 +29,7 @@ public class FileHelper {
     public static File getMCDir() {
         switch (OSType.getOS()) {
             case WINDOWS:
-                return new File(System.getProperty("user.home") + "\\%APPDATA%\\Roaming\\.minecraft");
+                return new File(System.getProperty("user.home") + "\\APPDATA\\Roaming\\.minecraft");
             case MAC:
                 return new File(System.getProperty("user.home") + "/Library/Application Support/minecraft");
             case LINUX:
@@ -50,12 +50,17 @@ public class FileHelper {
             File fileObj = new File(root, fileName);
             String expectedFormat = fileDesc.getString("format");
             if (!fileObj.exists()) {
-                if (expectedFormat.equals("json"))
-                    createFile(fileObj, "{}");
-                else if (expectedFormat.equals("dir"))
-                    fileObj.mkdirs();
-                else
-                    createFile(fileObj);
+                switch (expectedFormat) {
+                    case "json":
+                        createFile(fileObj, "{}");
+                        break;
+                    case "dir":
+                        fileObj.mkdirs();
+                        break;
+                    default:
+                        createFile(fileObj);
+                        break;
+                }
             }
         }
     }
