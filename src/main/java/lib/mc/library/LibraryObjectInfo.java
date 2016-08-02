@@ -33,6 +33,7 @@ public class LibraryObjectInfo {
 
     /**
      * Get the version
+     *
      * @return The version
      */
     public String getVersion() {
@@ -40,15 +41,17 @@ public class LibraryObjectInfo {
     }
 
     /**
-     *Gets a URL referring to the download URL of the package
-     * @return
+     * Gets a URL referring to the download URL of the package
+     *
+     * @return The download URL
      */
     public String toURL() {
-        return "/" + getPackageName() + "/" + getLibraryName() + "/" + getVersion() + "/" + getLibraryName() + "-" + getVersion() + ".jar";
+        return getPackageName().replaceAll("\\.", "/") + "/" + getLibraryName() + "/" + getVersion() + "/" + getLibraryName() + "-" + getVersion() + ".jar";
     }
 
     /**
      * Gets the URL containing the package's SHA1SUM.
+     *
      * @return The URL
      */
     public String getSHA1URL() {

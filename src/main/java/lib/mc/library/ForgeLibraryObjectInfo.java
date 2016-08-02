@@ -11,6 +11,6 @@ public class ForgeLibraryObjectInfo extends LibraryObjectInfo {
 
     @Override
     public String toURL() {
-        return super.toURL() + ".tar.xz";
+        return super.toURL() + ".pack.xz";
     }
 }

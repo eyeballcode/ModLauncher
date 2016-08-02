@@ -5,10 +5,22 @@ package lib.mc.library;
  */
 public class NativeMCLibraryObject extends LibraryObject {
 
-    private String rawName;
+    private String rawName, sha1Sum;
 
-    public NativeMCLibraryObject(String rawName) {
+    private NativesRules rules;
+
+    public NativeMCLibraryObject(String rawName, String sha1Sum, NativesRules rules) {
         this.rawName = rawName;
+        this.rules = rules;
+        this.sha1Sum = sha1Sum;
+    }
+
+    public String getSHA1Sum() {
+        return sha1Sum;
+    }
+
+    public NativesRules getRules() {
+        return rules;
     }
 
     @Override

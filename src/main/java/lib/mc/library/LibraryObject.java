@@ -30,7 +30,7 @@ public abstract class LibraryObject {
      * @return A <code>{@link LibraryObjectInfo}</code> containing info about the package
      */
     public LibraryObjectInfo parseName() {
-        Pattern regex = Pattern.compile("^([\\w.]+):([\\w\\-]+):(.+)$");
+        Pattern regex = Pattern.compile("^([^:]+):([^:]+):(.+)$");
         Matcher matcher = regex.matcher(getRawName());
         if (matcher.matches()) {
             MatchResult result = matcher.toMatchResult();
@@ -41,5 +41,7 @@ public abstract class LibraryObject {
         }
         return null;
     }
+
+    public abstract String getSHA1Sum();
 
 }

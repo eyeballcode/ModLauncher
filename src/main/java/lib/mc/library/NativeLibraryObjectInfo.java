@@ -50,7 +50,7 @@ public class NativeLibraryObjectInfo extends LibraryObjectInfo {
      * @return The URL referring to the download URL of the package
      */
     public String toURL() {
-        return "/" + getPackageName() + "/" + getLibraryName() + "/" + getVersion() + "/" + getLibraryName() + "-" + getVersion() + "-" + getNativesName() + ".jar";
+        return getPackageName().replaceAll("\\.", "/") + "/" + getLibraryName() + "/" + getVersion() + "/" + getLibraryName() + "-" + getVersion() + "-" + getNativesName() + ".jar";
     }
 
     /**

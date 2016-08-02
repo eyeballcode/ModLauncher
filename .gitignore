@@ -11,3 +11,5 @@ settings.gradle
 /asm/
 /logs/
 /saves/
+/classes/
+/libraries/

@@ -1,6 +1,7 @@
 package lib.mc.util;
 
 public class Utils {
+
     public enum OS {
         WINDOWS, MACOSX, LINUX
     }

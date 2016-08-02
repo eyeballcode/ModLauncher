@@ -6,9 +6,11 @@ package lib.mc.library;
 public class ForgeLibraryObject extends LibraryObject {
 
     private String rawName;
+    private boolean isForgeLib;
 
-    public ForgeLibraryObject(String rawName) {
+    public ForgeLibraryObject(String rawName, boolean isForgeLib) {
         this.rawName = rawName;
+        this.isForgeLib = isForgeLib;
     }
 
     @Override
@@ -18,12 +20,20 @@ public class ForgeLibraryObject extends LibraryObject {
 
     @Override
     public String getHostServer() {
-        return "https://files.minecraftforge.net/";
+        if (isForgeLib)
+            return "http://files.minecraftforge.net/maven/";
+        else
+            return "https://libraries.minecraft.net/";
     }
 
     @Override
     public LibraryObjectInfo parseName() {
         LibraryObjectInfo info = super.parseName();
         return new ForgeLibraryObjectInfo(info);
+    }
+
+    @Override
+    public String getSHA1Sum() {
+        return null;
     }
 }

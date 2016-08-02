@@ -5,10 +5,11 @@ package lib.mc.library;
  */
 public class DefaultMCLibraryObject extends LibraryObject {
 
-    private String rawName;
+    private String rawName, sha1sum;
 
-    public DefaultMCLibraryObject(String rawName) {
+    public DefaultMCLibraryObject(String rawName, String sha1sum) {
         this.rawName = rawName;
+        this.sha1sum = sha1sum;
     }
 
     @Override
@@ -19,6 +20,11 @@ public class DefaultMCLibraryObject extends LibraryObject {
     @Override
     public String getHostServer() {
         return "https://libraries.minecraft.net/";
+    }
+
+    @Override
+    public String getSHA1Sum() {
+        return sha1sum;
     }
 
 }
