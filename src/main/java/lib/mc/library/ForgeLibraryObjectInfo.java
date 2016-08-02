@@ -7,6 +7,12 @@ public class ForgeLibraryObjectInfo extends LibraryObjectInfo {
 
     private boolean isForgeLib;
 
+    /**
+     * Constructs a ForgeLibraryObjectInfo object
+     *
+     * @param info       The base info
+     * @param isForgeLib Is it a forge lib or can it be obtained from libraries.minecraft.net?
+     */
     public ForgeLibraryObjectInfo(LibraryObjectInfo info, boolean isForgeLib) {
         super(info.getLibraryName(), info.getPackageName(), info.getVersion());
     }

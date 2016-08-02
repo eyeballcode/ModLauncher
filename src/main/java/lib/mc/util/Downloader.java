@@ -30,6 +30,10 @@ public class Downloader {
 
     /**
      * Downloads a SHA1-checksumed file
+     * <p>
+     * If <code>outputFile</code> exists, it will check whether its SHA1SUM matches.
+     * If it does, it will not redownload.
+     * Otherwise, it will redownload the file.
      *
      * @param location   The URL of the online file
      * @param outputFile The output file to write to
@@ -39,6 +43,13 @@ public class Downloader {
      * @throws IOException If an error occurred while downloading
      */
     public static int sha1Download(URL location, File outputFile, String sha1Sum, int tries) throws IOException {
+        if (outputFile.exists()) {
+            if (ChecksumUtils.calcSHA1Sum(outputFile).equals(sha1Sum)) {
+                return 0;
+            }
+            outputFile.delete();
+        }
+
         for (int i = 1; i <= tries; i++) {
             download(location, outputFile);
             if (ChecksumUtils.calcSHA1Sum(outputFile).equals(sha1Sum)) {
