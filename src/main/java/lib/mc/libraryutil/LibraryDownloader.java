@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * A class to help download libraries, and unpack them as needed.
+ */
 public class LibraryDownloader {
 
     /**

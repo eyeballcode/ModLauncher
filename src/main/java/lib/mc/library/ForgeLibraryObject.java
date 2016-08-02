@@ -29,7 +29,7 @@ public class ForgeLibraryObject extends LibraryObject {
     @Override
     public LibraryObjectInfo parseName() {
         LibraryObjectInfo info = super.parseName();
-        return new ForgeLibraryObjectInfo(info);
+        return new ForgeLibraryObjectInfo(info, isForgeLib);
     }
 
     @Override

@@ -2,4 +2,4 @@
 
 This is the rewrite branch of the modlauncher
 
-[Click here](master) to go to the master branch
+[Click here](/eyeballcode/ModLauncher/tree/rewrite) to go to the master branch

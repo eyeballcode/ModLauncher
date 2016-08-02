@@ -7,8 +7,19 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
+/**
+ * A simple class to download files.
+ */
 public class Downloader {
 
+    /**
+     * Download a no-checksum file
+     *
+     * @param location The URL of the online file
+     * @param output   The output file to write to
+     * @return If the file was downloaded
+     * @throws IOException If an error occurred while downloading
+     */
     public static boolean download(URL location, File output) throws IOException {
         if (output.exists()) return false;
         ReadableByteChannel rbc = Channels.newChannel(location.openStream());
@@ -17,6 +28,16 @@ public class Downloader {
         return true;
     }
 
+    /**
+     * Downloads a SHA1-checksumed file
+     *
+     * @param location   The URL of the online file
+     * @param outputFile The output file to write to
+     * @param sha1Sum    The SHA1SUM of the file being downloaded
+     * @param tries      The number of attempts before giving up.
+     * @return The number of tries needed to download. -1 if the file was not downloaded properly
+     * @throws IOException If an error occurred while downloading
+     */
     public static int sha1Download(URL location, File outputFile, String sha1Sum, int tries) throws IOException {
         for (int i = 1; i <= tries; i++) {
             download(location, outputFile);

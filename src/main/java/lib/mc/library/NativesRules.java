@@ -7,11 +7,18 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * A set of rules for native libraries
+ */
 public class NativesRules {
 
     private final ArrayList<Utils.OS> allowed = new ArrayList<>();
     private final ArrayList<Utils.OS> disallowed = new ArrayList<>();
 
+    /**
+     * Construct a new <code>NativeRules</code> using the default rules array in the native json object from mc.
+     * @param rulesJSON The rules JSON.
+     */
     public NativesRules(JSONArray rulesJSON) {
         if (rulesJSON.length() == 0) {
             Collections.addAll(allowed, Utils.OS.values());
@@ -45,14 +52,27 @@ public class NativesRules {
         }
     }
 
+    /**
+     * Gets the list of allowed OSes.
+     * @return The list of allowed OSes.
+     */
     public ArrayList<Utils.OS> getAllowed() {
         return allowed;
     }
 
+    /**
+     * Gets the list of disallowed OSes.
+     * @return The list of disallowed OSes.
+     */
     public ArrayList<Utils.OS> getDisallowed() {
         return disallowed;
     }
 
+    /**
+     * Checks if an OS is allowed.
+     * @param os The OS to check.
+     * @return If the os specified is allowed.
+     */
     public boolean isAllowed(Utils.OS os) {
         return allowed.contains(os);
     }
