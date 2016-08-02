@@ -48,9 +48,20 @@ public class HTTPPOSTRequest extends HTTPRequest {
             connection.setRequestProperty(key, payload.get(key));
         }
         connection.getOutputStream().close();
-        connection.getInputStream();
-        String response = new Scanner(connection.getInputStream()).useDelimiter("\\A").next();
-        this.response = new HTTPResponse(response, connection.getResponseCode());
+        try {
+            connection.getInputStream();
+            if (connection.getResponseCode() == 204)
+                this.response = new HTTPResponse("", 204);
+            else {
+                String response = new Scanner(connection.getInputStream()).useDelimiter("\\A").next();
+                this.response = new HTTPResponse(response, connection.getResponseCode());
+            }
+        } catch (IOException e) {
+            if (e.getMessage().startsWith("Server returned HTTP response code: 4")) {
+                String response = new Scanner(connection.getErrorStream()).useDelimiter("\\A").next();
+                this.response = new HTTPResponse(response, connection.getResponseCode());
+            }
+        }
     }
 
     @Override

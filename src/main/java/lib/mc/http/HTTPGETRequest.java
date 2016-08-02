@@ -62,7 +62,7 @@ public class HTTPGETRequest extends HTTPRequest {
                 this.response = new HTTPResponse(response, connection.getResponseCode());
             }
         } catch (IOException e) {
-            if (e.getMessage().startsWith("Server returned HTTP response code: 429 for URL")) {
+            if (e.getMessage().startsWith("Server returned HTTP response code: 4")) {
                 String response = new Scanner(connection.getErrorStream()).useDelimiter("\\A").next();
                 this.response = new HTTPResponse(response, connection.getResponseCode());
             }
