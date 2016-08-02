@@ -13,38 +13,25 @@
  *
  * 	You should have received a copy of the GNU General Public License
  * 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * 	
  * 	See LICENSE.MD for more details.
  */
 
+import lib.mc.mojang.MojangAPI;
+import lib.mc.player.SkinCapeInfo;
 
-package lib.mc.util;
+import java.util.UUID;
 
-import java.util.regex.Pattern;
+public class TestSkinCapeInfo {
 
-public class Utils {
-
-
-    public static String parseUUID(String rawUUID) {
-        Pattern pattern = Pattern.compile("^(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})$");
-        return pattern.matcher(rawUUID).replaceAll("$1-$2-$3-$4-$5");
-    }
-
-    public enum OS {
-        WINDOWS, MACOSX, LINUX
-    }
-
-    public static class OSUtils {
-
-        public static OS getOS() {
-            String os = System.getProperty("os.name").toLowerCase();
-            if (os.contains("win"))
-                return OS.WINDOWS;
-            else if (os.contains("mac"))
-                return OS.MACOSX;
-            else if (os.contains("linux"))
-                return OS.LINUX;
-            else return OS.WINDOWS;
+    public static void main(String[] args) throws Exception {
+        UUID uuid = MojangAPI.fromUsername("Eyeballcode", -1);
+        SkinCapeInfo skinCapeInfo = MojangAPI.getSkinAndCapeInfo(uuid);
+        System.out.println("Player model: " + skinCapeInfo.getPlayerType());
+        System.out.println("Skin URL: " + skinCapeInfo.getSkin().getSkinURL());
+        if (skinCapeInfo.hasCape()) {
+            System.out.println("Cape URL: " + skinCapeInfo.getCape().getCapeURL());
         }
     }
+
 }

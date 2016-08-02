@@ -17,34 +17,18 @@
  * 	See LICENSE.MD for more details.
  */
 
+package lib.mc.player;
 
-package lib.mc.util;
+import org.json.JSONObject;
 
-import java.util.regex.Pattern;
+public class PlayerSkin {
+    private String skinURL;
 
-public class Utils {
-
-
-    public static String parseUUID(String rawUUID) {
-        Pattern pattern = Pattern.compile("^(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})$");
-        return pattern.matcher(rawUUID).replaceAll("$1-$2-$3-$4-$5");
+    protected PlayerSkin(JSONObject skin) {
+        skinURL = skin.getString("url");
     }
 
-    public enum OS {
-        WINDOWS, MACOSX, LINUX
-    }
-
-    public static class OSUtils {
-
-        public static OS getOS() {
-            String os = System.getProperty("os.name").toLowerCase();
-            if (os.contains("win"))
-                return OS.WINDOWS;
-            else if (os.contains("mac"))
-                return OS.MACOSX;
-            else if (os.contains("linux"))
-                return OS.LINUX;
-            else return OS.WINDOWS;
-        }
+    public String getSkinURL() {
+        return skinURL;
     }
 }

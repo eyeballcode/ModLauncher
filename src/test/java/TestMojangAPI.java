@@ -17,38 +17,15 @@
  * 	See LICENSE.MD for more details.
  */
 
-package lib.mc.assets;
+import lib.mc.mojang.MojangAPI;
 
-public class Asset {
+public class TestMojangAPI {
 
-    private String filepath, sha1sum;
-
-    /**
-     * Constructs a new <code>Asset</code> object.
-     *
-     * @param filepath The filepath name of the object.
-     * @param sha1sum  The SHA1SUM of the file.
-     */
-    public Asset(String filepath, String sha1sum) {
-        this.filepath = filepath;
-        this.sha1sum = sha1sum;
+    public static void main(String[] args) throws Exception {
+        System.out.println(MojangAPI.getStatus().getStatus("minecraft.net"));
+        System.out.println(MojangAPI.getStatus().getStatus("auth.mojang.com"));
+        System.out.println(MojangAPI.fromUsername("Eyeballcode", -1).toString());
+        System.out.println(MojangAPI.fromUsername("Eyeballcode", -1).toString());
     }
 
-    /**
-     * Get the SHA1SUM of the hash
-     *
-     * @return The SHA1SUM of the hash
-     */
-    public String getSHA1Sum() {
-        return sha1sum;
-    }
-
-    /**
-     * Get the file path to download to
-     *
-     * @return The file path to download to
-     */
-    public String getFilepath() {
-        return filepath;
-    }
 }

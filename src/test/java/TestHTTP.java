@@ -17,38 +17,21 @@
  * 	See LICENSE.MD for more details.
  */
 
-package lib.mc.assets;
+import lib.mc.http.HTTPGETRequest;
+import lib.mc.http.HTTPJSONResponse;
 
-public class Asset {
+import java.io.IOException;
+import java.net.URL;
 
-    private String filepath, sha1sum;
+public class TestHTTP {
 
-    /**
-     * Constructs a new <code>Asset</code> object.
-     *
-     * @param filepath The filepath name of the object.
-     * @param sha1sum  The SHA1SUM of the file.
-     */
-    public Asset(String filepath, String sha1sum) {
-        this.filepath = filepath;
-        this.sha1sum = sha1sum;
+    public static void main(String[] args) throws IOException {
+        HTTPGETRequest request = new HTTPGETRequest();
+        request.setPayload("Chicken", "Tasty");
+        request.send(new URL("http://httpbin.org/get"));
+        HTTPJSONResponse response = new HTTPJSONResponse(request.getResponse());
+//        System.out.println(response.getResponse());
+        System.out.println(response.toJSONObject().toString(4));
     }
 
-    /**
-     * Get the SHA1SUM of the hash
-     *
-     * @return The SHA1SUM of the hash
-     */
-    public String getSHA1Sum() {
-        return sha1sum;
-    }
-
-    /**
-     * Get the file path to download to
-     *
-     * @return The file path to download to
-     */
-    public String getFilepath() {
-        return filepath;
-    }
 }

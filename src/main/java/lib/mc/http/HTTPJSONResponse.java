@@ -17,34 +17,22 @@
  * 	See LICENSE.MD for more details.
  */
 
+package lib.mc.http;
 
-package lib.mc.util;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import java.util.regex.Pattern;
+public class HTTPJSONResponse extends HTTPResponse {
 
-public class Utils {
-
-
-    public static String parseUUID(String rawUUID) {
-        Pattern pattern = Pattern.compile("^(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})$");
-        return pattern.matcher(rawUUID).replaceAll("$1-$2-$3-$4-$5");
+    public HTTPJSONResponse(HTTPResponse response) {
+        super(response.getResponse(), response.getResponseCode());
     }
 
-    public enum OS {
-        WINDOWS, MACOSX, LINUX
+    public JSONObject toJSONObject() {
+        return new JSONObject(response);
     }
 
-    public static class OSUtils {
-
-        public static OS getOS() {
-            String os = System.getProperty("os.name").toLowerCase();
-            if (os.contains("win"))
-                return OS.WINDOWS;
-            else if (os.contains("mac"))
-                return OS.MACOSX;
-            else if (os.contains("linux"))
-                return OS.LINUX;
-            else return OS.WINDOWS;
-        }
+    public JSONArray toJSONArray() {
+        return new JSONArray(response);
     }
 }
