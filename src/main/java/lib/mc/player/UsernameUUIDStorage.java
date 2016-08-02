@@ -17,21 +17,27 @@
  * 	See LICENSE.MD for more details.
  */
 
-import lib.mc.http.HTTPGETRequest;
-import lib.mc.http.HTTPJSONResponse;
+package lib.mc.player;
 
-import java.io.IOException;
-import java.net.URL;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-public class TestHTTP {
+import java.util.HashMap;
 
-    public static void main(String[] args) throws IOException {
-        HTTPGETRequest request = new HTTPGETRequest();
-        request.setParameter("Chicken", "Tasty");
-        request.send(new URL("http://httpbin.org/get"));
-        HTTPJSONResponse response = new HTTPJSONResponse(request.getResponse());
-//        System.out.println(response.getResponse());
-        System.out.println(response.toJSONObject().toString(4));
+public class UsernameUUIDStorage {
+
+    private HashMap<String, Player> data = new HashMap<>();
+
+    public UsernameUUIDStorage(JSONArray respArray) {
+        for (Object n : respArray) {
+            JSONObject user = (JSONObject) n;
+            Player player = new Player(user.getString("id"), user.getString("name"));
+            data.put(user.getString("name"), player);
+        }
+    }
+
+    public Player getPlayer(String playername) {
+        return data.get(playername);
     }
 
 }

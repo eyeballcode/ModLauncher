@@ -17,21 +17,38 @@
  * 	See LICENSE.MD for more details.
  */
 
-import lib.mc.http.HTTPGETRequest;
-import lib.mc.http.HTTPJSONResponse;
+package lib.mc.player;
 
-import java.io.IOException;
-import java.net.URL;
+public class Player {
 
-public class TestHTTP {
 
-    public static void main(String[] args) throws IOException {
-        HTTPGETRequest request = new HTTPGETRequest();
-        request.setParameter("Chicken", "Tasty");
-        request.send(new URL("http://httpbin.org/get"));
-        HTTPJSONResponse response = new HTTPJSONResponse(request.getResponse());
-//        System.out.println(response.getResponse());
-        System.out.println(response.toJSONObject().toString(4));
+    private String uuid, name;
+
+    public Player(String id, String name) {
+        uuid = id;
+        this.name = name;
     }
 
+    /**
+     * Get the player name
+     *
+     * @return The player name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Get the player UUID
+     *
+     * @return The player UUID
+     */
+    public String getUUID() {
+        return uuid;
+    }
+
+    @Override
+    public String toString() {
+        return name + "@" + getUUID();
+    }
 }

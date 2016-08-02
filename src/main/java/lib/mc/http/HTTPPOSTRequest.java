@@ -28,12 +28,14 @@ import java.util.Scanner;
 
 public class HTTPPOSTRequest extends HTTPRequest {
 
-    HashMap<String, String> payload = new HashMap<>();
+    HashMap<String, String> params = new HashMap<>();
     boolean sent = false;
     HTTPResponse response;
+    String payload;
+    private String contentType = "text/plain";
 
-    public void setPayload(String key, String value) {
-        payload.put(key, value);
+    public void setParameter(String key, String value) {
+        params.put(key, value);
     }
 
     @Override
@@ -44,9 +46,12 @@ public class HTTPPOSTRequest extends HTTPRequest {
         connection.setDoInput(true);
 
         connection.setRequestMethod("POST");
-        for (String key : payload.keySet()) {
-            connection.setRequestProperty(key, payload.get(key));
+        connection.setRequestProperty("Content-Type", contentType);
+        for (String key : params.keySet()) {
+            connection.setRequestProperty(key, params.get(key));
         }
+        connection.getOutputStream().write('\n');
+        connection.getOutputStream().write(payload.getBytes());
         connection.getOutputStream().close();
         try {
             connection.getInputStream();
@@ -64,6 +69,10 @@ public class HTTPPOSTRequest extends HTTPRequest {
         }
     }
 
+    public void setPayload(String payload) {
+        this.payload = payload;
+    }
+
     @Override
     public HTTPResponse getResponse() {
         return response;
@@ -72,5 +81,9 @@ public class HTTPPOSTRequest extends HTTPRequest {
     @Override
     public String getMethod() {
         return "POST";
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 }

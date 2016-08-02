@@ -19,7 +19,10 @@
 
 package lib.mc.except;
 
-public class RateLimitedException extends Throwable {
+public class RateLimitedException extends RuntimeException {
 
 
+    public RateLimitedException(String s) {
+        super(s);
+    }
 }

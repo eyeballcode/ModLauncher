@@ -22,12 +22,16 @@ package lib.mc.mojang;
 import lib.mc.except.RateLimitedException;
 import lib.mc.http.HTTPGETRequest;
 import lib.mc.http.HTTPJSONResponse;
+import lib.mc.http.HTTPPOSTRequest;
 import lib.mc.player.SkinCapeInfo;
+import lib.mc.player.UsernameUUIDStorage;
 import lib.mc.util.Utils;
 import org.json.JSONArray;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -71,7 +75,7 @@ public class MojangAPI {
     public static UUID fromUsername(String username, long time) throws IOException {
         HTTPGETRequest httpgetRequest = new HTTPGETRequest();
         if (time > 0)
-            httpgetRequest.setPayload("at", String.valueOf(time));
+            httpgetRequest.setParameter("at", String.valueOf(time));
         httpgetRequest.send(new URL("https://api.mojang.com/users/profiles/minecraft/" + username));
         HTTPJSONResponse response = new HTTPJSONResponse(httpgetRequest.getResponse());
         if (response.getResponse().length() == 0) {
@@ -105,7 +109,7 @@ public class MojangAPI {
         HTTPJSONResponse response = new HTTPJSONResponse(request.getResponse());
         if (response.toJSONObject().has("error")) {
             if (response.toJSONObject().getString("error").equals("TooManyRequestsException")) {
-                throw new RateLimitedException();
+                throw new RateLimitedException("");
             }
         }
         SkinCapeInfo skinCapeInfo = new SkinCapeInfo(response.toJSONObject());
@@ -123,4 +127,39 @@ public class MojangAPI {
         skinCapeInfoCache.remove(user.toString().replaceAll("-", ""));
     }
 
+    /**
+     * Gets the usernames and UUIDs of players requested
+     *
+     * @param usernames The names
+     * @return The Username and UUIDs of the players requested
+     * @throws IOException If there was an error
+     */
+    public static UsernameUUIDStorage getUUIDs(ArrayList<String> usernames) throws IOException {
+        if (usernames.size() > 100) throw new RateLimitedException("Cannot have more than 100 usernames");
+        JSONArray array = new JSONArray();
+        for (String username : usernames) {
+            array.put(username);
+        }
+        HTTPPOSTRequest httppostRequest = new HTTPPOSTRequest();
+        httppostRequest.setContentType("application/json");
+        httppostRequest.setPayload(array.toString());
+        httppostRequest.send(new URL("https://api.mojang.com/profiles/minecraft"));
+        HTTPJSONResponse response = new HTTPJSONResponse(httppostRequest.getResponse());
+
+        JSONArray respArray = response.toJSONArray();
+        return new UsernameUUIDStorage(respArray);
+    }
+
+    /**
+     * Get the UUIDS from a list
+     *
+     * @param names The names
+     * @return The Username and UUIDs of the players requested
+     * @throws IOException If there was an error
+     */
+    public static UsernameUUIDStorage getUUIDs(String... names) throws IOException {
+        ArrayList<String> list = new ArrayList<>();
+        Collections.addAll(list, names);
+        return getUUIDs(list);
+    }
 }

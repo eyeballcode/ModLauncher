@@ -28,25 +28,25 @@ import java.util.Scanner;
 
 public class HTTPGETRequest extends HTTPRequest {
 
-    HashMap<String, String> payload = new HashMap<>();
+    HashMap<String, String> params = new HashMap<>();
     boolean sent = false;
     HTTPResponse response;
 
-    public void setPayload(String key, String value) {
-        payload.put(key, value);
+    public void setParameter(String key, String value) {
+        params.put(key, value);
     }
 
     @Override
     public void send(URL url) throws IOException {
         if (sent) throw new IOException("Already sent");
         String url_ = url.toExternalForm();
-        if (payload.keySet().size() > 0)
+        if (params.keySet().size() > 0)
             url_ += "?";
-        for (String key : payload.keySet()) {
-            if (payload.get(key).trim().equals("")) {
+        for (String key : params.keySet()) {
+            if (params.get(key).trim().equals("")) {
                 continue;
             }
-            url_ += key + "=" + payload.get(key);
+            url_ += key + "=" + params.get(key);
         }
 
         HttpURLConnection connection = (HttpURLConnection) new URL(url_).openConnection();

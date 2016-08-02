@@ -17,21 +17,19 @@
  * 	See LICENSE.MD for more details.
  */
 
-import lib.mc.http.HTTPGETRequest;
-import lib.mc.http.HTTPJSONResponse;
+import lib.mc.mojang.MojangAPI;
+import lib.mc.player.UsernameUUIDStorage;
 
 import java.io.IOException;
-import java.net.URL;
 
-public class TestHTTP {
+public class TestUUIDMultiGet {
 
     public static void main(String[] args) throws IOException {
-        HTTPGETRequest request = new HTTPGETRequest();
-        request.setParameter("Chicken", "Tasty");
-        request.send(new URL("http://httpbin.org/get"));
-        HTTPJSONResponse response = new HTTPJSONResponse(request.getResponse());
-//        System.out.println(response.getResponse());
-        System.out.println(response.toJSONObject().toString(4));
+        UsernameUUIDStorage storage = MojangAPI.getUUIDs("Eyeballcode", "plants79", "CaptainSparklez", "a2ewewaa");
+        System.out.println(storage.getPlayer("Eyeballcode"));
+        System.out.println(storage.getPlayer("plants79"));
+        System.out.println(storage.getPlayer("CaptainSparklez"));
+        System.out.println(storage.getPlayer("a2ewewaa"));
     }
 
 }
