@@ -1,3 +1,23 @@
+/*
+ * 	Copyright (C) 2016 Eyeballcode
+ *
+ * 	This program is free software: you can redistribute it and/or modify
+ * 	it under the terms of the GNU General Public License as published by
+ * 	the Free Software Foundation, either version 3 of the License, or
+ * 	(at your option) any later version.
+ *
+ * 	This program is distributed in the hope that it will be useful,
+ * 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * 	GNU General Public License for more details.
+ *
+ * 	You should have received a copy of the GNU General Public License
+ * 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * 	See LICENSE.MD for more details.
+ */
+
+
 package lib.mc.library;
 
 import lib.mc.util.Utils;
@@ -17,6 +37,7 @@ public class NativesRules {
 
     /**
      * Construct a new <code>NativeRules</code> using the default rules array in the native json object from mc.
+     *
      * @param rulesJSON The rules JSON.
      */
     public NativesRules(JSONArray rulesJSON) {
@@ -54,6 +75,7 @@ public class NativesRules {
 
     /**
      * Gets the list of allowed OSes.
+     *
      * @return The list of allowed OSes.
      */
     public ArrayList<Utils.OS> getAllowed() {
@@ -62,6 +84,7 @@ public class NativesRules {
 
     /**
      * Gets the list of disallowed OSes.
+     *
      * @return The list of disallowed OSes.
      */
     public ArrayList<Utils.OS> getDisallowed() {
@@ -70,6 +93,7 @@ public class NativesRules {
 
     /**
      * Checks if an OS is allowed.
+     *
      * @param os The OS to check.
      * @return If the os specified is allowed.
      */

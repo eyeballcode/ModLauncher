@@ -17,6 +17,7 @@
  * 	See LICENSE.MD for more details.
  */
 
+
 package lib.mc.assets;
 
 import lib.mc.except.InvalidPathException;
