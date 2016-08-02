@@ -36,6 +36,13 @@ public class MojangAPIStatus {
         this.info = info;
     }
 
+    /**
+     * Gets the status for a site.
+     *
+     * @param site The site eg minecraft.net
+     * @return The status GREEN, YELLOW or RED
+     * @throws Exception If the site doesn't exist
+     */
     public MojangAPIStatusType getStatus(String site) throws Exception {
         if (!info.has(site)) {
             throw new Exception("No such site!");
@@ -43,10 +50,5 @@ public class MojangAPIStatus {
         return MojangAPIStatusType.valueOf(info.getString(site).toUpperCase());
     }
 
-    @Override
-    public String toString() {
-
-        return super.toString();
-    }
 }
     

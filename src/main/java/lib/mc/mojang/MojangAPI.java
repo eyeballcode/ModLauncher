@@ -19,6 +19,7 @@
 
 package lib.mc.mojang;
 
+import lib.mc.except.RateLimitedException;
 import lib.mc.http.HTTPGETRequest;
 import lib.mc.http.HTTPJSONResponse;
 import lib.mc.player.SkinCapeInfo;
@@ -36,6 +37,12 @@ public class MojangAPI {
     private static long lastCacheTime_Status = 0;
     private static HashMap<String, SkinCapeInfo> skinCapeInfoCache = new HashMap<>();
 
+    /**
+     * Gets the status of the mojang API endpoints
+     *
+     * @return The statuses.
+     * @throws IOException If the status could not be retrieved
+     */
     public static MojangAPIStatus getStatus() throws IOException {
         if (statusCache != null) {
             if (lastCacheTime_Status - System.currentTimeMillis() < (1000 * 60 * 60)) {
@@ -53,6 +60,14 @@ public class MojangAPI {
         return status;
     }
 
+    /**
+     * Get a UUID from a username
+     *
+     * @param username The username
+     * @param time     The time. Only works if user has changed name before. If user has not or you want the latest, use a negative number.
+     * @return The UUID of the user
+     * @throws IOException If the UUID could not be fetched
+     */
     public static UUID fromUsername(String username, long time) throws IOException {
         HTTPGETRequest httpgetRequest = new HTTPGETRequest();
         if (time > 0)
@@ -67,7 +82,20 @@ public class MojangAPI {
         return UUID.fromString(parsedUUID);
     }
 
-    public static SkinCapeInfo getSkinAndCapeInfo(UUID playerUUID) throws IOException {
+    /**
+     * Gets cape and skin info for the player
+     * <p>
+     * <h1>WARNING!!!</h1>
+     * This endpoint has extreme rate limiting.
+     * Therefore, all results are cached and to update them, you need to clear the cache.
+     *
+     * @param playerUUID The player UUID
+     * @return The skin and cape info
+     * @throws IOException          If it could not be fetched
+     * @throws RateLimitedException If you're rate limited
+     * @see #clearSkinAndCapeCache(UUID)
+     */
+    public static SkinCapeInfo getSkinAndCapeInfo(UUID playerUUID) throws IOException, RateLimitedException {
         String uuid = playerUUID.toString().replaceAll("-", "");
         if (skinCapeInfoCache.containsKey(uuid)) {
             return skinCapeInfoCache.get(uuid);
@@ -75,10 +103,24 @@ public class MojangAPI {
         HTTPGETRequest request = new HTTPGETRequest();
         request.send(new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid));
         HTTPJSONResponse response = new HTTPJSONResponse(request.getResponse());
-
+        if (response.toJSONObject().has("error")) {
+            if (response.toJSONObject().getString("error").equals("TooManyRequestsException")) {
+                throw new RateLimitedException();
+            }
+        }
         SkinCapeInfo skinCapeInfo = new SkinCapeInfo(response.toJSONObject());
         skinCapeInfoCache.put(uuid, skinCapeInfo);
         return skinCapeInfo;
+    }
+
+    /**
+     * Clears the skin and cape cache for a user
+     *
+     * @param user The user's UUID
+     * @see #getSkinAndCapeInfo(UUID)
+     */
+    public static void clearSkinAndCapeCache(UUID user) {
+        skinCapeInfoCache.remove(user.toString().replaceAll("-", ""));
     }
 
 }

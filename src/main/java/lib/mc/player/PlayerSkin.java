@@ -28,6 +28,11 @@ public class PlayerSkin {
         skinURL = skin.getString("url");
     }
 
+    /**
+     * Gets the skin URL
+     *
+     * @return The skin URL
+     */
     public String getSkinURL() {
         return skinURL;
     }

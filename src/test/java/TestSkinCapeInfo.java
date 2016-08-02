@@ -17,6 +17,7 @@
  * 	See LICENSE.MD for more details.
  */
 
+import lib.mc.except.RateLimitedException;
 import lib.mc.mojang.MojangAPI;
 import lib.mc.player.SkinCapeInfo;
 
@@ -24,7 +25,7 @@ import java.util.UUID;
 
 public class TestSkinCapeInfo {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception, RateLimitedException {
         UUID uuid = MojangAPI.fromUsername("Eyeballcode", -1);
         SkinCapeInfo skinCapeInfo = MojangAPI.getSkinAndCapeInfo(uuid);
         System.out.println("Player model: " + skinCapeInfo.getPlayerType());

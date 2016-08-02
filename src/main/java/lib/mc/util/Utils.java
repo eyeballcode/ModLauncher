@@ -24,7 +24,12 @@ import java.util.regex.Pattern;
 
 public class Utils {
 
-
+    /**
+     * Creates a Java compatible UUID from the hyphenless minecraft UUIDS
+     *
+     * @param rawUUID The minecraft UUID
+     * @return The Java UUID
+     */
     public static String parseUUID(String rawUUID) {
         Pattern pattern = Pattern.compile("^(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})$");
         return pattern.matcher(rawUUID).replaceAll("$1-$2-$3-$4-$5");
@@ -36,6 +41,10 @@ public class Utils {
 
     public static class OSUtils {
 
+        /**
+         * Gets the OS
+         * @return The current OS
+         */
         public static OS getOS() {
             String os = System.getProperty("os.name").toLowerCase();
             if (os.contains("win"))

@@ -50,18 +50,38 @@ public class SkinCapeInfo {
         }
     }
 
+    /**
+     * Gets the player's cape
+     *
+     * @return The player's cape, or null if none
+     */
     public PlayerCape getCape() {
         return hasCape() ? new PlayerCape(cape) : null;
     }
 
+    /**
+     * The player's skin
+     *
+     * @return The player's skin
+     */
     public PlayerSkin getSkin() {
         return new PlayerSkin(skin);
     }
 
+    /**
+     * Checks if the player has a cape
+     *
+     * @return If the player has a cape
+     */
     public boolean hasCape() {
         return cape != null;
     }
 
+    /**
+     * Gets the player type
+     *
+     * @return Steve or Alex (Thinner arms)
+     */
     public String getPlayerType() {
         return playerType;
     }

@@ -17,23 +17,9 @@
  * 	See LICENSE.MD for more details.
  */
 
-package lib.mc.player;
+package lib.mc.except;
 
-import org.json.JSONObject;
+public class RateLimitedException extends Throwable {
 
-public class PlayerCape {
-    private String capeURL;
 
-    protected PlayerCape(JSONObject cape) {
-        capeURL = cape.getString("url");
-    }
-
-    /**
-     * Gets the cape URL
-     *
-     * @return The cape URL
-     */
-    public String getCapeURL() {
-        return capeURL;
-    }
 }

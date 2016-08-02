@@ -53,12 +53,19 @@ public class HTTPGETRequest extends HTTPRequest {
         connection.setDoInput(true);
 
         connection.setRequestMethod(getMethod());
-        connection.getInputStream();
-        if (connection.getResponseCode() == 204)
-            this.response = new HTTPResponse("", 204);
-        else {
-            String response = new Scanner(connection.getInputStream()).useDelimiter("\\A").next();
-            this.response = new HTTPResponse(response, connection.getResponseCode());
+        try {
+            connection.getInputStream();
+            if (connection.getResponseCode() == 204)
+                this.response = new HTTPResponse("", 204);
+            else {
+                String response = new Scanner(connection.getInputStream()).useDelimiter("\\A").next();
+                this.response = new HTTPResponse(response, connection.getResponseCode());
+            }
+        } catch (IOException e) {
+            if (e.getMessage().startsWith("Server returned HTTP response code: 429 for URL")) {
+                String response = new Scanner(connection.getErrorStream()).useDelimiter("\\A").next();
+                this.response = new HTTPResponse(response, connection.getResponseCode());
+            }
         }
     }
 
