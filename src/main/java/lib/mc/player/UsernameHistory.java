@@ -13,24 +13,34 @@
  *
  * 	You should have received a copy of the GNU General Public License
  * 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 	
+ *
  * 	See LICENSE.MD for more details.
  */
 
-import lib.mc.mojang.MojangAPI;
-import lib.mc.player.Player;
-import lib.mc.player.SkinCapeInfo;
+package lib.mc.player;
 
-public class TestSkinCapeInfo {
+import java.util.HashMap;
+import java.util.UUID;
 
-    public static void main(String[] args) throws Exception {
-        Player player = MojangAPI.fromUsername("Eyeballcode");
-        SkinCapeInfo skinCapeInfo = MojangAPI.getSkinAndCapeInfo(player);
-        System.out.println("Player model: " + skinCapeInfo.getPlayerType());
-        System.out.println("Skin URL: " + skinCapeInfo.getSkin().getSkinURL());
-        if (skinCapeInfo.hasCape()) {
-            System.out.println("Cape URL: " + skinCapeInfo.getCape().getCapeURL());
-        }
+public class UsernameHistory {
+
+    private UUID player;
+    private HashMap<Long, String> times = new HashMap<>();
+
+    public UsernameHistory(UUID player, HashMap<Long, String> times) {
+        this.player = player;
+        this.times = times;
     }
 
+    public HashMap<Long, String> getTimes() {
+        return times;
+    }
+
+    public int getNumberOfChanges() {
+        return times.size() - 1;
+    }
+
+    public UUID forPlayer() {
+        return player;
+    }
 }

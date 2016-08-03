@@ -23,10 +23,13 @@ import lib.mc.except.RateLimitedException;
 import lib.mc.http.HTTPGETRequest;
 import lib.mc.http.HTTPJSONResponse;
 import lib.mc.http.HTTPPOSTRequest;
+import lib.mc.player.Player;
 import lib.mc.player.SkinCapeInfo;
+import lib.mc.player.UsernameHistory;
 import lib.mc.player.UsernameUUIDStorage;
 import lib.mc.util.Utils;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
@@ -65,17 +68,14 @@ public class MojangAPI {
     }
 
     /**
-     * Get a UUID from a username
+     * Get a Player object from a username
      *
      * @param username The username
-     * @param time     The time. Only works if user has changed name before. If user has not or you want the latest, use a negative number.
      * @return The UUID of the user
-     * @throws IOException If the UUID could not be fetched
+     * @throws IOException If the user data could not be fetched
      */
-    public static UUID fromUsername(String username, long time) throws IOException {
+    public static Player fromUsername(String username) throws IOException {
         HTTPGETRequest httpgetRequest = new HTTPGETRequest();
-        if (time > 0)
-            httpgetRequest.setParameter("at", String.valueOf(time));
         httpgetRequest.send(new URL("https://api.mojang.com/users/profiles/minecraft/" + username));
         HTTPJSONResponse response = new HTTPJSONResponse(httpgetRequest.getResponse());
         if (response.getResponse().length() == 0) {
@@ -83,23 +83,24 @@ public class MojangAPI {
         }
         String rawUUID = response.toJSONObject().getString("id");
         String parsedUUID = Utils.parseUUID(rawUUID);
-        return UUID.fromString(parsedUUID);
+        return new Player(parsedUUID, response.toJSONObject().getString("name"));
     }
 
     /**
      * Gets cape and skin info for the player
      * <p>
      * <h1>WARNING!!!</h1>
-     * This endpoint has extreme rate limiting.
+     * This endpoint has extreme rate limiting (1min / request).
      * Therefore, all results are cached and to update them, you need to clear the cache.
      *
-     * @param playerUUID The player UUID
+     * @param playerInfo The player
      * @return The skin and cape info
      * @throws IOException          If it could not be fetched
      * @throws RateLimitedException If you're rate limited
-     * @see #clearSkinAndCapeCache(UUID)
+     * @see #clearSkinAndCapeCache(Player)
      */
-    public static SkinCapeInfo getSkinAndCapeInfo(UUID playerUUID) throws IOException, RateLimitedException {
+    public static SkinCapeInfo getSkinAndCapeInfo(Player playerInfo) throws IOException, RateLimitedException {
+        UUID playerUUID = playerInfo.getUUID();
         String uuid = playerUUID.toString().replaceAll("-", "");
         if (skinCapeInfoCache.containsKey(uuid)) {
             return skinCapeInfoCache.get(uuid);
@@ -120,11 +121,11 @@ public class MojangAPI {
     /**
      * Clears the skin and cape cache for a user
      *
-     * @param user The user's UUID
-     * @see #getSkinAndCapeInfo(UUID)
+     * @param user The user
+     * @see #getSkinAndCapeInfo(Player)
      */
-    public static void clearSkinAndCapeCache(UUID user) {
-        skinCapeInfoCache.remove(user.toString().replaceAll("-", ""));
+    public static void clearSkinAndCapeCache(Player user) {
+        skinCapeInfoCache.remove(user.getUUID().toString().replaceAll("-", ""));
     }
 
     /**
@@ -161,5 +162,24 @@ public class MojangAPI {
         ArrayList<String> list = new ArrayList<>();
         Collections.addAll(list, names);
         return getUUIDs(list);
+    }
+
+    public static UsernameHistory getUsernameHistory(Player player) throws IOException {
+        UUID uuid = player.getUUID();
+        HashMap<Long, String> times = new HashMap<>();
+        HTTPGETRequest httpgetRequest = new HTTPGETRequest();
+        httpgetRequest.send(new URL("https://api.mojang.com/user/profiles/" + uuid.toString().replaceAll("-", "") + "/names"));
+        HTTPJSONResponse response = new HTTPJSONResponse(httpgetRequest.getResponse());
+        for (Object o : response.toJSONArray()) {
+            if (o instanceof JSONObject) {
+                JSONObject user = (JSONObject) o;
+                if (!user.has("changedToAt"))
+                    times.put(0L, user.getString("name"));
+                else
+                    times.put(user.getLong("changedToAt"), user.getString("name"));
+
+            }
+        }
+        return new UsernameHistory(uuid, times);
     }
 }

@@ -17,7 +17,6 @@
  * 	See LICENSE.MD for more details.
  */
 
-
 package lib.mc.libraryutil;
 
 import lib.mc.except.InvalidPathException;
@@ -81,5 +80,6 @@ public class LibraryDownloader {
         }
 
     }
+
 
 }

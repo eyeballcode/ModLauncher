@@ -19,13 +19,16 @@
 
 package lib.mc.player;
 
-public class Player {
+import lib.mc.util.Utils;
 
+import java.util.UUID;
+
+public class Player {
 
     private String uuid, name;
 
     public Player(String id, String name) {
-        uuid = id;
+        uuid = Utils.parseUUID(id.replaceAll("-", ""));
         this.name = name;
     }
 
@@ -43,8 +46,8 @@ public class Player {
      *
      * @return The player UUID
      */
-    public String getUUID() {
-        return uuid;
+    public UUID getUUID() {
+        return UUID.fromString(uuid);
     }
 
     @Override
