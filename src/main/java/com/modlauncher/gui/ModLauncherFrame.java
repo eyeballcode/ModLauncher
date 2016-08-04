@@ -17,19 +17,7 @@
  * 	See LICENSE.MD for more details.
  */
 
-import lib.mc.mojang.MojangAPI;
-import lib.mc.player.UsernameUUIDStorage;
+package com.modlauncher.gui;
 
-import java.io.IOException;
-
-public class TestUUIDMultiGet {
-
-    public static void main(String[] args) throws IOException {
-        UsernameUUIDStorage storage = MojangAPI.getUUIDs("Eyeballcode", "plants79", "CaptainSparklez", "a2ewewaa");
-        System.out.println(storage.getPlayer("Eyeballcode"));
-        System.out.println(storage.getPlayer("plants79"));
-        System.out.println(storage.getPlayer("CaptainSparklez"));
-        System.out.println(storage.getPlayer("a2ewewaa"));
-    }
-
+public class ModLauncherFrame {
 }
