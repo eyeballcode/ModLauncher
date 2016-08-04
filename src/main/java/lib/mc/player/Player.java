@@ -26,10 +26,29 @@ import java.util.UUID;
 public class Player {
 
     private String uuid, name;
+    private boolean legacy, demo;
 
-    public Player(String id, String name) {
+    public Player(String id, String name, boolean legacy, boolean demo) {
         uuid = Utils.parseUUID(id.replaceAll("-", ""));
         this.name = name;
+        this.legacy = legacy;
+        this.demo = demo;
+    }
+
+    /**
+     * Checks if the account is demo
+     * @return If the account is demo.
+     */
+    public boolean isDemo() {
+        return demo;
+    }
+
+    /**
+     * Checks if the account is legacy
+     * @return If the account is legacy
+     */
+    public boolean isLegacy() {
+        return legacy;
     }
 
     /**

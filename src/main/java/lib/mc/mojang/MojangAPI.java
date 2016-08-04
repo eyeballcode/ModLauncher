@@ -32,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,7 +84,28 @@ public class MojangAPI {
         }
         String rawUUID = response.toJSONObject().getString("id");
         String parsedUUID = Utils.parseUUID(rawUUID);
-        return new Player(parsedUUID, response.toJSONObject().getString("name"));
+        return new Player(parsedUUID, response.toJSONObject().getString("name"), response.toJSONObject().has("legacy"), response.toJSONObject().has("demo"));
+    }
+
+    /**
+     * Gets the player UUID from a certain time
+     * @param player The player
+     * @param time A java timestamp
+     * @return The players' UUID
+     * @throws IOException If the UUID could not be fetched
+     */
+    public static UUID getPlayerUUIDFromTime(Player player, long time) throws IOException {
+        String username = player.toString();
+        HTTPGETRequest httpgetRequest = new HTTPGETRequest();
+        httpgetRequest.setParameter("at", String.valueOf(time));
+        httpgetRequest.send(new URL("https://api.mojang.com/users/profiles/minecraft/" + username));
+        HTTPJSONResponse response = new HTTPJSONResponse(httpgetRequest.getResponse());
+        if (response.getResponse().length() == 0) {
+            throw new RuntimeException("No such player!");
+        }
+        String rawUUID = response.toJSONObject().getString("id");
+        String parsedUUID = Utils.parseUUID(rawUUID);
+        return UUID.fromString(parsedUUID);
     }
 
     /**
@@ -180,6 +202,6 @@ public class MojangAPI {
 
             }
         }
-        return new UsernameHistory(uuid, times);
+        return new UsernameHistory(player, times);
     }
 }

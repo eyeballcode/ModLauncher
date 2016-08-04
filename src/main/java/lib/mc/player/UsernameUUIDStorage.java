@@ -24,6 +24,9 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
+/**
+ * Stores a list of players
+ */
 public class UsernameUUIDStorage {
 
     private HashMap<String, Player> data = new HashMap<>();
@@ -31,11 +34,17 @@ public class UsernameUUIDStorage {
     public UsernameUUIDStorage(JSONArray respArray) {
         for (Object n : respArray) {
             JSONObject user = (JSONObject) n;
-            Player player = new Player(user.getString("id"), user.getString("name"));
+            Player player = new Player(user.getString("id"), user.getString("name"), user.has("legacy"), user.has("demo"));
             data.put(user.getString("name"), player);
         }
     }
 
+    /**
+     * Gets a player in the list
+     *
+     * @param playername The player's username to search for
+     * @return The player, or null if the user is not in the list
+     */
     public Player getPlayer(String playername) {
         return data.get(playername);
     }

@@ -19,37 +19,45 @@
 
 package lib.mc.player;
 
-import java.util.HashMap;
-import java.util.UUID;
+public class AccessToken {
+    String accessToken, clientToken;
+    Player player;
 
-public class UsernameHistory {
-
-    private Player player;
-    private HashMap<Long, String> times = new HashMap<>();
-
-    public UsernameHistory(Player player, HashMap<Long, String> times) {
+    public AccessToken(String accessToken, String clientToken, Player player) {
+        this.accessToken = accessToken;
+        this.clientToken = clientToken;
         this.player = player;
-        this.times = times;
-    }
-
-    public HashMap<Long, String> getTimes() {
-        return times;
     }
 
     /**
-     * Gets the number of times the user changed his/her name
-     * @return The number of times the user changed his/her name
+     * Gets the access token
+     * @return The access token
      */
-    public int getNumberOfChanges() {
-        return times.size() - 1;
+    public String getAccessToken() {
+        return accessToken;
     }
 
     /**
-     * The player this username history if for
+     * Gets the client token used
+     * @return The client token
+     */
+    public String getClientToken() {
+        return hasClientToken()? clientToken : "Minecraft";
+    }
+
+    /**
+     * The player this access token is for
      * @return The player
      */
-    public Player forPlayer() {
+    public Player getPlayer() {
         return player;
     }
-}
 
+    /**
+     * If it uses a custom client token.
+     * @return True if it uses a custom client token, False if otherwise
+     */
+    public boolean hasClientToken() {
+        return clientToken != null;
+    }
+}
