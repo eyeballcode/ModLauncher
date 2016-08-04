@@ -28,11 +28,17 @@ public class NativeMCLibraryObject extends LibraryObject {
     private String rawName, sha1Sum;
 
     private NativesRules rules;
+    private ExtractRules extractRules;
 
-    public NativeMCLibraryObject(String rawName, String sha1Sum, NativesRules rules) {
+    public NativeMCLibraryObject(String rawName, String sha1Sum, NativesRules rules, ExtractRules extractRules) {
         this.rawName = rawName;
         this.rules = rules;
         this.sha1Sum = sha1Sum;
+        this.extractRules = extractRules;
+    }
+
+    public ExtractRules getExtractRules() {
+        return extractRules;
     }
 
     public String getSHA1Sum() {

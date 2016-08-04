@@ -78,4 +78,13 @@ public class Downloader {
         }
         return -1;
     }
+
+    public static String wget(URL location) throws IOException {
+        File tmpFile = new File("tmp-" + System.currentTimeMillis() + ".tmp");
+        download(location, tmpFile);
+        String data = FileIO.read(tmpFile);
+        tmpFile.delete();
+        return data;
+    }
+
 }

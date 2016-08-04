@@ -23,8 +23,8 @@ import lib.mc.player.UsernameHistory;
 public class TestMojangAPI {
 
     public static void main(String[] args) throws Exception {
-//        System.out.println(MojangAPI.getStatus().getStatus("minecraft.net"));
-//        System.out.println(MojangAPI.getStatus().getStatus("auth.mojang.com"));
+        System.out.println(MojangAPI.getStatus().getStatus("minecraft.net"));
+        System.out.println(MojangAPI.getStatus().getStatus("auth.mojang.com"));
         UsernameHistory history = MojangAPI.getUsernameHistory(MojangAPI.fromUsername("Eyeballcode"));
         System.out.println(history.getNumberOfChanges());
         System.out.println(MojangAPI.fromUsername("Eyeballcode").toString());

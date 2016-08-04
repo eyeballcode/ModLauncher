@@ -20,7 +20,6 @@
 package lib.mc.player;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 public class UsernameHistory {
 

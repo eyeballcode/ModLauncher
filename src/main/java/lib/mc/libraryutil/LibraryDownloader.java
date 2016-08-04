@@ -20,9 +20,8 @@
 package lib.mc.libraryutil;
 
 import lib.mc.except.InvalidPathException;
-import lib.mc.library.LibraryObject;
-import lib.mc.library.LibraryObjectInfo;
-import lib.mc.library.NativeMCLibraryObject;
+import lib.mc.library.*;
+import lib.mc.util.Compressor;
 import lib.mc.util.Downloader;
 import lib.mc.util.Utils;
 
@@ -79,6 +78,13 @@ public class LibraryDownloader {
             }
         }
 
+        if (library instanceof NativeMCLibraryObject) {
+            NativeMCLibraryObject nativeMCLibraryObject = (NativeMCLibraryObject) library;
+            ExtractRules rules = nativeMCLibraryObject.getExtractRules();
+            Compressor.unzip(outputFile, rules, packagedFolder);
+        } else if (library instanceof ForgeLibraryObject) {
+            Compressor.unxz();
+        }
     }
 
 
