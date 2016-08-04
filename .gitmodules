@@ -1,0 +1,3 @@
+[submodule "src/main/api"]
+	path = src/main/api
+	url = git@github.com:eyeballcode/lib.mc.git
