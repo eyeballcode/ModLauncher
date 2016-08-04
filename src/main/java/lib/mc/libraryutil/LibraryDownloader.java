@@ -21,6 +21,7 @@ package lib.mc.libraryutil;
 
 import lib.mc.except.InvalidPathException;
 import lib.mc.library.*;
+import lib.mc.util.ChecksumUtils;
 import lib.mc.util.Compressor;
 import lib.mc.util.Downloader;
 import lib.mc.util.Utils;
@@ -83,7 +84,13 @@ public class LibraryDownloader {
             ExtractRules rules = nativeMCLibraryObject.getExtractRules();
             Compressor.unzip(outputFile, rules, packagedFolder);
         } else if (library instanceof ForgeLibraryObject) {
-            Compressor.unxz();
+            if (!((ForgeLibraryObject) library).isForgeLib()) return;
+            File unxzedFile = new File(outputFile.getParentFile(), outputFile.getName().substring(0, outputFile.getName().lastIndexOf(".")));
+            Compressor.unxz(outputFile, unxzedFile);
+            ForgeLibraryChecksums checksums = Compressor.getChecksums(unxzedFile);
+            File newFile = Compressor.stripChecksums(unxzedFile);
+            File unpacked = new File(newFile.getAbsolutePath().substring(0, newFile.getAbsolutePath().length() - ".art".length()));
+            Compressor.unpack(newFile, unpacked);
         }
     }
 

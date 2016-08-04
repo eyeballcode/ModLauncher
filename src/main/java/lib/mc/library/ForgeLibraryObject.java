@@ -33,6 +33,10 @@ public class ForgeLibraryObject extends LibraryObject {
         this.isForgeLib = isForgeLib;
     }
 
+    public boolean isForgeLib() {
+        return isForgeLib;
+    }
+
     @Override
     public String getRawName() {
         return rawName;
@@ -40,6 +44,7 @@ public class ForgeLibraryObject extends LibraryObject {
 
     @Override
     public String getHostServer() {
+        if (parseName().getLibraryName().equals("forge")) return "http://files.minecraftforge.net/maven/";
         if (isForgeLib)
             return "http://files.minecraftforge.net/maven/";
         else

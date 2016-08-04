@@ -35,10 +35,15 @@ public class ForgeLibraryObjectInfo extends LibraryObjectInfo {
      */
     public ForgeLibraryObjectInfo(LibraryObjectInfo info, boolean isForgeLib) {
         super(info.getLibraryName(), info.getPackageName(), info.getVersion());
+        this.isForgeLib = isForgeLib;
     }
 
     @Override
     public String toURL() {
-        return super.toURL() + (isForgeLib ? ".pack.xz" : "");
+        if (getLibraryName().equals("forge")) {
+            String defaultURL = super.toURL();
+            return defaultURL.substring(0, defaultURL.length() - 4) + "-installer.jar";
+        } else
+            return super.toURL() + (isForgeLib ? ".pack.xz" : "");
     }
 }
