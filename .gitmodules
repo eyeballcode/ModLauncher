@@ -1,6 +1,3 @@
-[submodule "src/main/api"]
-	path = src/main/api
-	url = git@github.com:eyeballcode/lib.mc.git
-[submodule "LibMC"]
-	path = LibMC
+[submodule "lib.mc"]
+	path = lib.mc
 	url = git@github.com:eyeballcode/lib.mc.git
