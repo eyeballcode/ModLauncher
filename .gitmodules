@@ -1,0 +1,3 @@
+[submodule "lib.mc"]
+	path = lib.mc
+	url = git@github.com:eyeballcode/lib.mc.git
