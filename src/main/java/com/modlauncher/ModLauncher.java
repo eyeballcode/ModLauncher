@@ -25,7 +25,6 @@ public class ModLauncher {
 
     public static void main(String[] args) {
         System.out.println("ModLauncher started on " + Utils.OSUtils.getOS());
-
     }
 
 }
