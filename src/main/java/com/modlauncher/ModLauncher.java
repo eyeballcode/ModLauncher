@@ -19,12 +19,28 @@
 
 package com.modlauncher;
 
+import com.modlauncher.gui.ModLauncherFrame;
+import com.modlauncher.util.AWTUtil;
 import lib.mc.util.Utils;
+
+import java.awt.*;
+import java.io.IOException;
 
 public class ModLauncher {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("ModLauncher started on " + Utils.OSUtils.getOS());
+//        boolean asssetsCompleted = LauncherStructure.downloadAssets();
+//        if (asssetsCompleted) {
+        if (true) {
+            AWTUtil.setLAF();
+            ModLauncherFrame launcherFrame = new ModLauncherFrame();
+            launcherFrame.pack();
+            launcherFrame.setVisible(true);
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            launcherFrame.setLocation(screenSize.width / 2 - launcherFrame.getWidth() / 2,
+                    screenSize.height / 2 - launcherFrame.getHeight() / 2);
+        }
     }
 
 }

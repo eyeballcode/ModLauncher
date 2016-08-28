@@ -19,5 +19,16 @@
 
 package com.modlauncher.gui;
 
-public class ModLauncherFrame {
+import com.modlauncher.LauncherStructure;
+
+import javax.swing.*;
+
+public class ModLauncherFrame extends JFrame {
+
+    public ModLauncherFrame () {
+        super("ModLauncher by Eyeballcode V" + LauncherStructure.VERSION);
+        add(new LauncherTabs());
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    }
+
 }
