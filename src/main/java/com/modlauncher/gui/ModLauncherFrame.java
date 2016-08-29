@@ -25,9 +25,11 @@ import javax.swing.*;
 
 public class ModLauncherFrame extends JFrame {
 
-    public ModLauncherFrame () {
+    public ModLauncherFrame() {
         super("ModLauncher by Eyeballcode V" + LauncherStructure.VERSION);
+        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         add(new LauncherTabs());
+        add(new AccountsPanel(this));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 

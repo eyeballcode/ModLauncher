@@ -1,6 +1,5 @@
 package com.modlauncher.gui;
 
-import com.modlauncher.LauncherStructure;
 import com.modlauncher.modpack.ModPack;
 import com.modlauncher.modpack.ModPackListItem;
 import com.modlauncher.modpack.ModPackListRender;
@@ -8,22 +7,19 @@ import com.modlauncher.util.FileUtil;
 import com.modlauncher.util.ModPackUtil;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import sun.plugin.javascript.JSClassLoader;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.plaf.BorderUIResource;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Vector;
 
-public class ModpacksTab extends JPanel {
+class ModpacksTab extends JPanel {
 
-    public ModpacksTab() {
+    ModpacksTab() {
         try {
             setLayout(new GridLayout(1, 2));
             JSONObject modpacksData = new JSONObject(new JSONTokener(new FileInputStream(new File(FileUtil.getMCLauncherDir(), "modpacks.json")))).getJSONObject("modpacks");
@@ -33,7 +29,7 @@ public class ModpacksTab extends JPanel {
             modpackData.setPreferredSize(new Dimension(screenSize.width / 3, screenSize.height / 2));
             modpackData.setEditable(false);
             modpackData.setBorder(BorderFactory.createLineBorder(UIManager.getColor("Label.background").darker()));
-            list.setCellRenderer(new ModPackListRender());
+            list.setCellRenderer(new ModPackListRender<ModPackListItem>());
             Vector<ModPackListItem> modpacksList = new Vector<>();
             for (String name : modpacksData.keySet()) {
                 JSONObject modpackJSON = modpacksData.getJSONObject(name);
@@ -49,11 +45,10 @@ public class ModpacksTab extends JPanel {
                         @Override
                         public void run() {
                             ModPackListItem item = list.getSelectedValue();
-                            JSONObject data = item.getData();
                             try {
-                                modpackData.setText("<html><center><h2>Loading " + item.toString() + "...</h2></center></html>");
-                                JSONObject modpackDataJSON = ModPackUtil.cacheModpack(item.toString());
-                                ModPack modPack = new ModPack(item.toString(), modpackDataJSON);
+                                modpackData.setText("<html><center><h2>Loading " + item.getName() + "...</h2></center></html>");
+                                JSONObject modpackDataJSON = ModPackUtil.cacheModpack(item.getName());
+                                ModPack modPack = new ModPack(item.getName(), modpackDataJSON);
                                 modpackData.setText(modPack.genDesc());
                                 interrupt();
                             } catch (Exception e1) {

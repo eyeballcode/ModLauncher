@@ -7,9 +7,10 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-public class ModPackListRender extends DefaultListCellRenderer {
+public class ModPackListRender<T> extends JPanel implements ListCellRenderer<T> {
+
     @Override
-    public Component getListCellRendererComponent(JList list, Object value_, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<? extends T> list, T value_, int index, boolean isSelected, boolean cellHasFocus) {
         ModPackListItem value = (ModPackListItem) value_;
         setComponentOrientation(list.getComponentOrientation());
 
@@ -34,12 +35,15 @@ public class ModPackListRender extends DefaultListCellRenderer {
             setBackground(list.getBackground());
             setForeground(list.getForeground());
         }
-
-        setIcon(null);
-        setText((value == null) ? "" : value.toString());
+        setLayout(new FlowLayout(FlowLayout.LEFT));
+        JLabel label = new JLabel(value.getName());
+        label.setForeground(UIManager.getColor("Label.foreground"));
+        removeAll();
+        add(label);
 
         setEnabled(list.isEnabled());
-        setFont(list.getFont());
+        label.setFont(list.getFont().deriveFont(list.getFont().getSize() + 5F));
+        setPreferredSize(new Dimension(getWidth(), getHeight() + 30));
 
         Border border = null;
         if (cellHasFocus) {

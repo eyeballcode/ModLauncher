@@ -22,10 +22,8 @@ public class ModPackUtil {
             if (ChecksumUtils.calcSHA1Sum(modpackFile).equals(modpack.getString("sha1"))) {
                 return new JSONObject(new JSONTokener(new FileInputStream(modpackFile)));
             }
-        } else {
-            Downloader.sha1Download(new URL(modpack.getString("url")), modpackFile, modpack.getString("sha1"), 5);
-            return new JSONObject(new JSONTokener(new FileInputStream(modpackFile)));
         }
-        return null;
+        Downloader.sha1Download(new URL(modpack.getString("url")), modpackFile, modpack.getString("sha1"), 5);
+        return new JSONObject(new JSONTokener(new FileInputStream(modpackFile)));
     }
 }

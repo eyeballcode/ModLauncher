@@ -4,8 +4,8 @@ import org.json.JSONObject;
 
 public class ModPackListItem {
 
-    JSONObject data;
-    String name;
+    private JSONObject data;
+    private String name;
 
     public ModPackListItem(JSONObject data, String name) {
         this.data = data;
@@ -14,6 +14,10 @@ public class ModPackListItem {
 
     @Override
     public String toString() {
+        return getName();
+    }
+
+    public String getName() {
         return name;
     }
 

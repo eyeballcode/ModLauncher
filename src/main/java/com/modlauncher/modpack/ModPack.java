@@ -16,13 +16,23 @@ public class ModPack {
         return name;
     }
 
+    public boolean isModded() {
+        return !data.getString("forgeVersion").equals("none");
+    }
+
     public String genDesc() {
         StringBuilder stringBuilder = new StringBuilder("<html>");
         stringBuilder.append("<h1>About this modpack</h1>");
+        System.out.println(data);
         stringBuilder.append("<p>").append(data.getString("description")).append("</p>");
+        JSONObject latestModList = data.getJSONObject("versions").getJSONObject(data.getString("latestVersion")).getJSONObject("modlist");
+        if (latestModList.has("FastCraft")) {
+            stringBuilder.append("<h1>WARNING: THIS MODPACK HAS FASTCRAFT!</h1>")
+            .append("<h2>When reporting bugs, please: </h2>")
+            .append("<ul><li>You say clearly that there's fastcraft</li><li>You make sure the bug has not been reported</li>");
+        }
         stringBuilder.append("<h1>Mod List (Version ").append(data.getString("latestVersion")).append(")</h1>");
         stringBuilder.append("<ul>");
-        JSONObject latestModList = data.getJSONObject("versions").getJSONObject(data.getString("latestVersion")).getJSONObject("modlist");
         for (String modName : latestModList.keySet()) {
             stringBuilder.append("<li>").append(modName);
             JSONObject mod = latestModList.getJSONObject(modName);
@@ -34,7 +44,6 @@ public class ModPack {
                     if (i + 1 != mod.getJSONArray("depends").length()) {
                         stringBuilder.append(", ");
                     }
-
                     i++;
                 }
                 stringBuilder.append(")");
