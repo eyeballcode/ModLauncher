@@ -1,5 +1,6 @@
 package com.modlauncher.util;
 
+import com.modlauncher.gui.ModLauncherFrame;
 import com.modlauncher.logging.LauncherLogger;
 import com.modlauncher.users.GameUserCache;
 import lib.mc.auth.Authenticator;
@@ -44,54 +45,5 @@ public class AWTUtil {
             // Never happen
         }
     }
-
-
-    public static void displayLogin(JFrame parent, final LoginListener listener) {
-        final JDialog dialog = new JDialog(parent);
-        dialog.setTitle("Login");
-        JPanel username = new JPanel(new GridLayout(2, 1));
-        JPanel password = new JPanel(new GridLayout(2, 1));
-        final JTextField usernameField = new JTextField();
-        final JPasswordField passwordField = new JPasswordField();
-        username.add(new JLabel("Username: "));
-        password.add(new JLabel("Password: "));
-        username.add(usernameField);
-        password.add(passwordField);
-        dialog.setLayout(new BoxLayout(dialog.getContentPane(), BoxLayout.Y_AXIS));
-        dialog.add(username);
-        dialog.add(password);
-        JPanel control = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton done = new JButton("Login");
-        JButton close = new JButton("Cancel");
-        control.add(done);
-        control.add(close);
-        dialog.getRootPane().setDefaultButton(done);
-        dialog.add(control);
-        close.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose();
-            }
-        });
-        done.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    AccessToken accessToken = Authenticator.login(usernameField.getText(), String.valueOf(passwordField.getPassword()), "MCLauncher");
-                    listener.onLogin(accessToken);
-                    dialog.dispose();
-                } catch (IOException ignored) {
-                    ignored.printStackTrace();
-                }
-            }
-        });
-        dialog.pack();
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        dialog.setLocation(screenSize.width / 2 - dialog.getWidth() / 2, screenSize.height / 2 - dialog.getHeight() / 2);
-        dialog.setVisible(true);
-        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    }
-
-
 }
 

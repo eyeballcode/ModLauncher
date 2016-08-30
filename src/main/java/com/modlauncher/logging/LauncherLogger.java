@@ -9,9 +9,9 @@ public class LauncherLogger {
         logger.addTarget(new PrintStreamLogTarget());
     }
 
-    Vector<ILogTarget> targets = new Vector<>();
+    private Vector<ILogTarget> targets = new Vector<>();
 
-    public LauncherLogger() {
+    private LauncherLogger() {
 
     }
 

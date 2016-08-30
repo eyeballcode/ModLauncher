@@ -2,10 +2,12 @@ package com.modlauncher.gui;
 
 import javax.swing.*;
 
-public class LauncherTabs extends JTabbedPane {
+class LauncherTabs extends JTabbedPane {
 
-    public LauncherTabs() {
+
+    LauncherTabs() {
         add("Modpacks", new ModpacksTab());
+        add("Launcher Console", ConsoleTab.tab);
     }
 
 }

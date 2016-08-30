@@ -64,7 +64,6 @@ class ModpacksTab extends JPanel {
         } catch (FileNotFoundException e) {
             // Won't happen, we downloaded assets
         }
-
     }
 
 }

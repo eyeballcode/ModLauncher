@@ -23,7 +23,6 @@ public class ModPack {
     public String genDesc() {
         StringBuilder stringBuilder = new StringBuilder("<html>");
         stringBuilder.append("<h1>About this modpack</h1>");
-        System.out.println(data);
         stringBuilder.append("<p>").append(data.getString("description")).append("</p>");
         JSONObject latestModList = data.getJSONObject("versions").getJSONObject(data.getString("latestVersion")).getJSONObject("modlist");
         if (latestModList.has("FastCraft")) {
