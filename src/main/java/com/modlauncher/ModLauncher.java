@@ -24,8 +24,7 @@ import com.modlauncher.gui.ModLauncherFrame;
 import com.modlauncher.logging.LauncherLogger;
 import com.modlauncher.users.GameUserCache;
 import com.modlauncher.util.AWTUtil;
-import com.sun.deploy.uitoolkit.ui.ConsoleTraceListener;
-import com.sun.deploy.uitoolkit.ui.LoggerConsole;
+import com.sun.javaws.jnl.LaunchSelection;
 import lib.mc.auth.Authenticator;
 import lib.mc.except.LoginException;
 import lib.mc.player.AccessToken;
@@ -34,42 +33,59 @@ import lib.mc.util.Utils;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 public class ModLauncher {
 
-    public static void main(String[] args) throws IOException {
+    private static ModLauncherFrame f;
+
+    public static void main(String[] args) {
         ConsoleTab.tab = new ConsoleTab();
         LauncherLogger.logger.log("ModLauncher started on " + Utils.OSUtils.getOS());
 
         final ModLauncherFrame launcherFrame = new ModLauncherFrame();
+        f = launcherFrame;
         launcherFrame.pack();
         launcherFrame.setVisible(true);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         launcherFrame.setLocation(screenSize.width / 2 - launcherFrame.getWidth() / 2,
                 screenSize.height / 2 - launcherFrame.getHeight() / 2);
-//        boolean asssetsCompleted = LauncherStructure.downloadAssets();
-        AWTUtil.setLAF();
-        SwingUtilities.updateComponentTreeUI(launcherFrame);
-        try {
-            AccessToken token = GameUserCache.getUser();
-            if (token != null) {
-                LauncherLogger.logger.log("Logging in as " + token.getPlayer().getName());
-                boolean valid = Authenticator.validate(token);
-                if (!valid) {
-                    try {
-                        LauncherLogger.logger.log("Refreshing access token...");
-                        token = Authenticator.refresh(token);
-                        GameUserCache.setUser(token);
-                    } catch (Exception e) {
-                        throw new IOException(e.getMessage());
+        boolean asssetsCompleted = LauncherStructure.downloadAssets();
+        if (asssetsCompleted) {
+            AWTUtil.setLAF();
+            SwingUtilities.updateComponentTreeUI(launcherFrame);
+            try {
+                AccessToken token = GameUserCache.getUser();
+                if (LauncherStructure.isOffline) {
+                    LauncherLogger.logger.log("Since offline, assuming token is valid.");
+                    launcherFrame.setupActualFrame();
+                } else {
+                    if (token != null) {
+                        LauncherLogger.logger.log("Logging in as " + token.getPlayer().getName());
+                        boolean valid = Authenticator.validate(token);
+                        if (!valid) {
+                            try {
+                                LauncherLogger.logger.log("Refreshing access token...");
+                                token = Authenticator.refresh(token);
+                                GameUserCache.setUser(token);
+                            } catch (LoginException e) {
+                                launcherFrame.setupLoginFrame(true);
+                            } catch (Exception e) {
+                                throw new IOException(e.getMessage());
+                            }
+                        }
+                        launcherFrame.setupActualFrame();
+                    } else {
+                        launcherFrame.setupLoginFrame(true);
                     }
                 }
+            } catch (UnknownHostException e) {
+                LauncherLogger.logger.log("Got disconnected while logging in,  assuming token is valid.");
                 launcherFrame.setupActualFrame();
-            } else {
-                launcherFrame.setupLoginFrame();
+                LauncherStructure.isOffline = true;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            LauncherLogger.logger.error(e.getMessage());
         }
     }
 

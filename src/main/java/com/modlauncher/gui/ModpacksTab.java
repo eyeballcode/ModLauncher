@@ -5,6 +5,7 @@ import com.modlauncher.modpack.ModPackListItem;
 import com.modlauncher.modpack.ModPackListRender;
 import com.modlauncher.util.FileUtil;
 import com.modlauncher.util.ModPackUtil;
+import lib.mc.except.NoSuchVersionException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -12,17 +13,23 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Vector;
 
 class ModpacksTab extends JPanel {
 
+
     ModpacksTab() {
         try {
             setLayout(new GridLayout(1, 2));
+
             JSONObject modpacksData = new JSONObject(new JSONTokener(new FileInputStream(new File(FileUtil.getMCLauncherDir(), "modpacks.json")))).getJSONObject("modpacks");
+
             final JList<ModPackListItem> list = new JList<>();
             final JEditorPane modpackData = new JEditorPane("text/html", "<html><center><h1>Please select a modpack first.</h1></center></html>");
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -49,6 +56,7 @@ class ModpacksTab extends JPanel {
                                 modpackData.setText("<html><center><h2>Loading " + item.getName() + "...</h2></center></html>");
                                 JSONObject modpackDataJSON = ModPackUtil.cacheModpack(item.getName());
                                 ModPack modPack = new ModPack(item.getName(), modpackDataJSON);
+                                ModPackUtil.setActiveModpack(modPack);
                                 modpackData.setText(modPack.genDesc());
                                 interrupt();
                             } catch (Exception e1) {
@@ -59,8 +67,10 @@ class ModpacksTab extends JPanel {
                     }.start();
                 }
             });
+
             add(new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
             add(new JScrollPane(modpackData, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+
         } catch (FileNotFoundException e) {
             // Won't happen, we downloaded assets
         }

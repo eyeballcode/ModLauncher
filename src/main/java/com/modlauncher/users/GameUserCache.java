@@ -37,7 +37,6 @@ public class GameUserCache {
         synchronized (lock) {
             File file = new File(FileUtil.getMCLauncherDir(), "usercache.json");
             JSONObject userList = Authenticator.genToCache(accessToken);
-            System.out.println(userList);
             FileOutputStream outputStream = new FileOutputStream(file);
             outputStream.write(userList.toString(4).getBytes());
             outputStream.close();

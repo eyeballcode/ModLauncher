@@ -22,7 +22,6 @@ package com.modlauncher.gui;
 import com.modlauncher.LauncherStructure;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 
 public class ModLauncherFrame extends JFrame {
@@ -31,15 +30,16 @@ public class ModLauncherFrame extends JFrame {
         super("ModLauncher by Eyeballcode V" + LauncherStructure.VERSION);
         add(ConsoleTab.tab);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setPreferredSize(new Dimension((int) (screenSize.width / 1.25F), (int) (screenSize.height / 1.5F)));
+        setPreferredSize(new Dimension(screenSize.width / 2, screenSize.height / 2));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
-    public void setupLoginFrame() {
+    public void setupLoginFrame(boolean exit) {
         getContentPane().removeAll();
         setLayout(new GridLayout(1, 1));
         setPreferredSize(null);
-        add(new AddAccountPanel(this));
+        add(new AddAccountPanel(this, exit));
+
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setPreferredSize(new Dimension(screenSize.width / 2, screenSize.height / 2));
@@ -51,9 +51,20 @@ public class ModLauncherFrame extends JFrame {
 
     public void setupActualFrame() {
         getContentPane().removeAll();
-        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-        add(new LauncherTabs());
-        add(new AccountsPanel(this));
+        GridBagLayout gridBagLayout = new GridBagLayout();
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        setLayout(gridBagLayout);
+
+        constraints.weighty = 1;
+        add(new LauncherTabs(), constraints);
+
+        constraints.gridy = 1;
+        constraints.weighty = .05;
+        add(new AccountsPanel(this), constraints);
+
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setPreferredSize(new Dimension(screenSize.width / 2, screenSize.height / 2));
         pack();

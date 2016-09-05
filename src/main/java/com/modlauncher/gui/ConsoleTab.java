@@ -23,23 +23,16 @@ public class ConsoleTab extends JPanel {
     private class WindowedLogger implements ILogTarget {
 
         private void appendToPane(final String msg, final Color c) {
-            try {
-                textPane.getStyledDocument().insertString(textPane.getText().length(), msg + "\n", SimpleAttributeSet.EMPTY);
-            } catch (BadLocationException e) {
-                e.printStackTrace();
-            }
-                    StyleContext sc = StyleContext.getDefaultStyleContext();
-                    AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
-
-                    aset = sc.addAttribute(aset, StyleConstants.FontFamily, "Lucida Console");
-                    aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
-//
-//                    int len = textPane.getDocument().getLength();
-//                    textPane.setCharacterAttributes(aset, false);
-//                    try {
-//                        textPane.getStyledDocument().insertString(len, msg + "\n", aset);
-//                    } catch (BadLocationException ignored) {
-//                    }
+            textPane.setText(textPane.getText() + msg + "\n");
+//            StyleContext sc = StyleContext.getDefaultStyleContext();
+//            AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
+//            aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
+//            int len = textPane.getDocument().getLength();
+//            textPane.setCharacterAttributes(aset, false);
+//            try {
+//                textPane.getStyledDocument().insertString(len, msg + "\n", aset);
+//            } catch (Exception ignored) {
+//            }
         }
 
         @Override

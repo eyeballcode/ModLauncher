@@ -22,7 +22,8 @@ public class AWTUtil {
                 // In LXDE or XFCE this happens...
                 // So we check if the previous LAF is equals to the current one.
                 HashMap<String, String> founds = new HashMap<>();
-                String[] preferences = {"GTK+", "Nimbus"};
+                String[] preferences = {"Nimbus"};
+//                String[] preferences = {"GTK+", "Nimbus"};
 
                 for (UIManager.LookAndFeelInfo lookAndFeelInfo : UIManager.getInstalledLookAndFeels()) {
                     founds.put(lookAndFeelInfo.getName(), lookAndFeelInfo.getClassName());
