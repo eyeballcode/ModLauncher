@@ -36,4 +36,8 @@ public class MCMod {
         return data.getString("sha1");
     }
 
+    public String getFilename() {
+        return getName().replaceAll("[^\\w]", "-").replaceAll("--+", "-");
+    }
+
 }

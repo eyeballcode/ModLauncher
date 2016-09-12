@@ -31,9 +31,9 @@ public class MCVersion {
         File librariesFolder = new File(FileUtil.mcLauncherFolder, "libraries");
         librariesFolder.mkdirs();
         LibrarySet librarySet = new LibrarySet(libraries);
-        librarySet.downloadAll(librariesFolder, new Handler() {
+        librarySet.downloadAll(librariesFolder, new Handler<LibraryObject>() {
             @Override
-            public void download(LibraryObject object) {
+            public void handle(LibraryObject object) {
                 System.out.println("Download " + object.parseName().getLibraryName());
             }
         });

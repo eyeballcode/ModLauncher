@@ -1,11 +1,15 @@
 package com.modlauncher.api.modpacks;
 
+import com.modlauncher.api.FileUtil;
 import com.modlauncher.api.forge.ForgeVersion;
+import com.modlauncher.api.minecraft.MCMod;
 import com.modlauncher.api.minecraft.MCModDownloader;
 import com.modlauncher.api.minecraft.MCModSet;
 import com.modlauncher.api.minecraft.MCVersion;
+import lib.mc.util.ChecksumUtils;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
@@ -64,4 +68,34 @@ public class ModPack {
         return modpackData.getString("description");
     }
 
+    public void setupFolders() {
+        File modpackFolder = new File(FileUtil.mcLauncherFolder, "modpack");
+        File myFolder = new File(modpackFolder, getName());
+        File modFolder = new File(myFolder, "mods");
+        myFolder.mkdirs();
+        modFolder.mkdir();
+    }
+
+    public void setupMods(String version) throws IOException {
+        File modCache = new File(FileUtil.mcLauncherFolder, "mod-cache");
+        File modpackFolder = new File(FileUtil.mcLauncherFolder, "modpack");
+        File myFolder = new File(modpackFolder, getName());
+        File modFolder = new File(myFolder, "mods");
+
+        for (MCMod mod : getModList(version).getMods()) {
+            String fileName = mod.getFilename() + "-" + mod.getVersion() + ".jar";
+            File modJar = new File(new File(new File(modCache, mod.getFilename()), mod.getVersion()), fileName);
+            File dest = new File(modFolder, fileName);
+            if (dest.exists()) {
+                if (ChecksumUtils.calcSHA1Sum(dest).equals(mod.getJARSHA1())) return;
+                dest.delete();
+            }
+            FileUtil.copyFile(modJar, dest);
+        }
+    }
+
+
+    public void setupMods() throws IOException {
+        setupMods(getLatestVersion());
+    }
 }

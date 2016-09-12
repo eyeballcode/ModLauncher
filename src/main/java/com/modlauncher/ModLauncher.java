@@ -12,6 +12,8 @@ public class ModLauncher {
         System.out.println(modPack.getDescription());
         modPack.getForgeVersion().download();
         modPack.downloadMods();
+        modPack.setupFolders();
+        modPack.setupMods();
     }
 
 }

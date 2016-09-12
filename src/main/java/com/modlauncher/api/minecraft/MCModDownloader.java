@@ -14,9 +14,9 @@ public class MCModDownloader {
         modCache.mkdirs();
 
         for (MCMod mod : modset.getMods()) {
-            File folder = new File(new File(modCache, mod.getName()), mod.getVersion());
+            File folder = new File(new File(modCache, mod.getFilename()), mod.getVersion());
             folder.mkdirs();
-            File jarDest = new File(folder, mod.getName() + "-" + mod.getVersion() + ".jar");
+            File jarDest = new File(folder, mod.getFilename() + "-" + mod.getVersion() + ".jar");
             Downloader.sha1Download(new URL(mod.getURL()), jarDest, mod.getJARSHA1(), 5);
             System.out.println("Download mod " + mod.getName());
         }
