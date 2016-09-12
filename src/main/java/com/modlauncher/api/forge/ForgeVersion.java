@@ -59,8 +59,6 @@ public class ForgeVersion {
         versionJARFolder.mkdirs();
         File versionJAR = new File(versionJARFolder, forgeVersion + ".jar");
         Downloader.download(new URL(versionJarURL), versionJAR);
-        MCVersion mcVersion = new MCVersion(forgeVersion.split("-")[0]);
-        mcVersion.download();
         JSONArray libraries = forgeData.getJSONObject("versionInfo").getJSONArray("libraries");
         LibrarySet librarySet = new LibrarySet(libraries);
         File libraryFolder = new File(FileUtil.mcLauncherFolder, "libraries");

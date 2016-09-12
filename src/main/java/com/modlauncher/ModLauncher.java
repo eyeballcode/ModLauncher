@@ -10,10 +10,12 @@ public class ModLauncher {
     public static void main(String[] args) throws IOException {
         ModPack modPack = ModPackLookup.lookupModpackByName("EyePack");
         System.out.println(modPack.getDescription());
-        modPack.getForgeVersion().download();
+//        modPack.getForgeVersion().download();
+        modPack.getMCVersion().download();
         modPack.downloadMods();
         modPack.setupFolders();
         modPack.setupMods();
+        modPack.grabConfigs();
     }
 
 }

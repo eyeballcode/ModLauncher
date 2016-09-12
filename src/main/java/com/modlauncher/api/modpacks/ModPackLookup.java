@@ -18,7 +18,7 @@ public class ModPackLookup {
         ModPackCache.getIndexCacheIfNeeded(dataURL, sha1);
         ModPackCache.getModpackIfNeeded(name, dataURL);
         JSONObject data = ModPackCache.modpackCache.get(dataURL + name);
-        return new ModPack(data, name);
+        return new ModPack(data, name, dataURL);
     }
 
 }

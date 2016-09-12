@@ -7,20 +7,27 @@ import com.modlauncher.api.minecraft.MCModDownloader;
 import com.modlauncher.api.minecraft.MCModSet;
 import com.modlauncher.api.minecraft.MCVersion;
 import lib.mc.util.ChecksumUtils;
+import lib.mc.util.Downloader;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Set;
 
 public class ModPack {
 
     private JSONObject modpackData;
-    private String name;
+    private String name, dataURL;
 
-    public ModPack(JSONObject modpackData, String name) {
+    public ModPack(JSONObject modpackData, String name, String dataURL) {
         this.modpackData = modpackData;
         this.name = name;
+        this.dataURL = dataURL;
     }
 
     public String getLatestVersion() {
@@ -60,6 +67,10 @@ public class ModPack {
         return new MCVersion(modpackData.getJSONObject("versions").getJSONObject(versionID).getString("minecraftVersion"));
     }
 
+    public MCVersion getMCVersion() {
+        return getMCVersion(getLatestVersion());
+    }
+
     public ForgeVersion getForgeVersion() {
         return getForgeVersion(modpackData.getString("latestVersion"));
     }
@@ -68,23 +79,31 @@ public class ModPack {
         return modpackData.getString("description");
     }
 
-    public void setupFolders() {
+    public void setupFolders(String version) {
         File modpackFolder = new File(FileUtil.mcLauncherFolder, "modpack");
-        File myFolder = new File(modpackFolder, getName());
+        File myFolder = new File(new File(modpackFolder, getName()), version);
         File modFolder = new File(myFolder, "mods");
+        File configFolder = new File(myFolder, "config");
         myFolder.mkdirs();
         modFolder.mkdir();
+        configFolder.mkdir();
+    }
+
+    public void setupFolders() {
+        setupFolders(getLatestVersion());
     }
 
     public void setupMods(String version) throws IOException {
         File modCache = new File(FileUtil.mcLauncherFolder, "mod-cache");
         File modpackFolder = new File(FileUtil.mcLauncherFolder, "modpack");
-        File myFolder = new File(modpackFolder, getName());
+        File myFolder = new File(new File(modpackFolder, getName()), version);
         File modFolder = new File(myFolder, "mods");
 
+        modFolder.mkdirs();
         for (MCMod mod : getModList(version).getMods()) {
             String fileName = mod.getFilename() + "-" + mod.getVersion() + ".jar";
             File modJar = new File(new File(new File(modCache, mod.getFilename()), mod.getVersion()), fileName);
+            modJar.getParentFile().mkdirs();
             File dest = new File(modFolder, fileName);
             if (dest.exists()) {
                 if (ChecksumUtils.calcSHA1Sum(dest).equals(mod.getJARSHA1())) return;
@@ -94,8 +113,57 @@ public class ModPack {
         }
     }
 
-
     public void setupMods() throws IOException {
         setupMods(getLatestVersion());
+    }
+
+    public String getConfigURL() {
+        return getConfigURL(getLatestVersion());
+    }
+
+    private String getConfigURL(String version) {
+        return modpackData.getJSONObject("versions").getJSONObject(version).getString("configIndex");
+    }
+
+
+    public String getConfigSHA1() {
+        return getConfigSHA1(getLatestVersion());
+    }
+
+    private String getConfigSHA1(String version) {
+        return modpackData.getJSONObject("versions").getJSONObject(version).getString("configIndexSHA1");
+    }
+
+    public void grabConfigs(String version) throws IOException {
+        File configDataCache = new File(FileUtil.mcLauncherFolder, "config-cache");
+        configDataCache.mkdirs();
+        URL dataURL = new URL(this.dataURL);
+        File myHostFolder = new File(configDataCache, dataURL.getHost() + "-" + dataURL.getFile().replaceAll("\\..+", "").replaceAll("\\" + File.separator, ""));
+        myHostFolder.mkdirs();
+        File myConfigCache = new File(myHostFolder, name + "-" + version + "-config.json");
+        Downloader.sha1Download(new URL(getConfigURL(version)), myConfigCache, getConfigSHA1(version), 5);
+
+        JSONObject configData = new JSONObject(new JSONTokener(new FileInputStream(myConfigCache)));
+        JSONObject files = configData.getJSONObject("files");
+        JSONArray folders = configData.getJSONArray("folders");
+
+        File modpackFolder = new File(FileUtil.mcLauncherFolder, "modpack");
+        File myFolder = new File(new File(modpackFolder, getName()), version);
+        File configFolder = new File(myFolder, "config");
+
+        for (Object folderName : folders) {
+            new File(configFolder, (String) folderName).mkdirs();
+        }
+
+        for (String filePath : files.keySet()) {
+            File file = new File(configFolder, filePath.replaceAll("/", File.separator));
+            JSONObject data = files.getJSONObject(filePath);
+            Downloader.sha1Download(new URL(data.getString("url")), file, data.getString("sha1"), 5);
+            System.out.println("Grab config " + filePath);
+        }
+    }
+
+    public void grabConfigs() throws IOException {
+        grabConfigs(getLatestVersion());
     }
 }
