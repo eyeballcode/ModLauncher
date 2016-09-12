@@ -1,6 +1,7 @@
 package com.modlauncher.api.minecraft;
 
 import com.modlauncher.api.FileUtil;
+import lib.mc.assets.Asset;
 import lib.mc.assets.AssetSet;
 import lib.mc.library.LibraryObject;
 import lib.mc.library.LibrarySet;
@@ -27,7 +28,12 @@ public class MCVersion {
         File assetFolder = new File(FileUtil.mcLauncherFolder, "assets");
         File assetObjects = new File(assetFolder, "objects");
         assetObjects.mkdirs();
-        assetSet.download(assetObjects);
+        assetSet.download(assetObjects, new Handler<Asset>() {
+            @Override
+            public void handle(Asset object) {
+                System.out.println("Download " + new File(object.getFilepath()).getName() + " (" + object.getSHA1Sum() + ")");
+            }
+        });
         File librariesFolder = new File(FileUtil.mcLauncherFolder, "libraries");
         librariesFolder.mkdirs();
         LibrarySet librarySet = new LibrarySet(libraries);
