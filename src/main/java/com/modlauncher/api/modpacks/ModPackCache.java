@@ -22,6 +22,8 @@ class ModPackCache {
         File modpackDataCacheFolder = new File(FileUtil.mcLauncherFolder, "modpack-cache");
         URL indexURL = new URL(url);
         File modpackCache = new File(modpackDataCacheFolder, indexURL.getHost() + "-" + indexURL.getFile().replaceAll("\\..+", "").replaceAll("\\" + File.separator, "") + ".json");
+        if (!modpackDataCacheFolder.exists())
+            modpackDataCacheFolder.mkdir();
         if (modpackCache.exists()) {
             if (sha1 != null) {
                 String calculatedSHA = ChecksumUtils.calcSHA1Sum(modpackCache);
@@ -33,13 +35,13 @@ class ModPackCache {
                     }
                 }
             }
-        }
-        if (!modpackDataCacheFolder.exists())
-            modpackDataCacheFolder.mkdir();
-        if (sha1 != null) {
-            Downloader.sha1Download(indexURL, modpackCache, sha1, 5);
         } else {
-            Downloader.download(indexURL, modpackCache);
+            if (sha1 != null) {
+                Downloader.sha1Download(indexURL, modpackCache, sha1, 5);
+            } else {
+                modpackCache.delete();
+                Downloader.download(indexURL, modpackCache);
+            }
         }
         JSONObject response = new JSONObject(new JSONTokener(new FileInputStream(modpackCache)));
         modpackIndexCache.put(url, response);
