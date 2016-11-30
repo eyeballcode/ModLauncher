@@ -33,8 +33,8 @@ public class ModLauncher {
         ModPack modPack = ModPackLookup.lookupModpackByName("EyePack");
         System.out.println(modPack.getDescription());
 
-//        modPack.getMCVersion().download();
-//        modPack.getForgeVersion().download();
+        modPack.getMCVersion().download();
+        modPack.getForgeVersion().download();
         modPack.downloadMods();
         modPack.setupFolders();
         modPack.setupMods();
