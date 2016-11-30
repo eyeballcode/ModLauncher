@@ -24,6 +24,7 @@ public class ForgeVersion {
         return forgeVersion;
     }
 
+
     public void download() throws IOException {
         String installerDownloadURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/" + forgeVersion + "/forge-" + forgeVersion + "-installer.jar";
         String versionJarURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/" + forgeVersion + "/forge-" + forgeVersion + "-universal.jar";

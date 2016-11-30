@@ -24,10 +24,13 @@ public class GameLauncher {
 
     public static void launch(ModPack modPack, String version, UserProfile profile) throws IOException {
         File modpackFolder = new File(new File(new File(FileUtil.mcLauncherFolder, "modpack"), modPack.getName()), version);
-        ArrayList<String> args = new ArrayList<>(Arrays.asList("java", "-cp"));
+        ArrayList<String> args = new ArrayList<>();
+        args.add("java");
+        args.add("-cp");
+
         String classPath = generateClassPath(modPack);
         args.add(classPath);
-        File nativeOutputLib = extractNatives(modPack);
+        final File nativeOutputLib = extractNatives(modPack);
         args.add("-Djava.library.path=" + nativeOutputLib.getAbsolutePath());
         args.add("-Duser.dir=" + modpackFolder.getAbsolutePath());
         File forgeDataJSONFile = new File(new File(FileUtil.mcLauncherFolder, "forge-version-cache"), modPack.getForgeVersion().getForgeVersion());
@@ -38,10 +41,27 @@ public class GameLauncher {
 
         args.add(mainClass);
 
-        args.add(mcArgs);
+        args.addAll(Arrays.asList(mcArgs.split(" ")));
 
         for (String s : args) System.out.print(s + " ");
         System.out.println();
+
+
+        ProcessBuilder processBuilder = new ProcessBuilder(args);
+        processBuilder.inheritIO();
+        final Process process = processBuilder.start();
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    process.waitFor();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    FileUtil.delete(nativeOutputLib);
+                }
+            }
+        }.start();
     }
 
     private static String parseArgs(String string, ModPack modpack, File modFolder, UserProfile profile) {
@@ -96,6 +116,7 @@ public class GameLauncher {
             String libRawName = libData.getString("name");
             LibraryObjectInfo info = new DefaultMCLibraryObject(libRawName, "").parseName();
             File libraryFile = new File(libraryFolder, info.toURL());
+            System.out.println(libraryFile);
             if (!libraryFile.exists()) continue; // Shouldn't even happen
             builder.append(libraryFile.getAbsolutePath()).append(File.pathSeparator);
         }
