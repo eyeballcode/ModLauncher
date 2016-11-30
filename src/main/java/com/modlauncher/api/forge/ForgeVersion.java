@@ -1,18 +1,14 @@
 package com.modlauncher.api.forge;
 
 import com.modlauncher.api.FileUtil;
-import com.modlauncher.api.minecraft.MCVersion;
-import lib.mc.library.LibraryObject;
-import lib.mc.library.LibrarySet;
+import lib.mc.library.DefaultMCLibraryObject;
+import lib.mc.library.LibraryObjectInfo;
 import lib.mc.util.Downloader;
-import lib.mc.util.Handler;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -31,6 +27,8 @@ public class ForgeVersion {
     public void download() throws IOException {
         String installerDownloadURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/" + forgeVersion + "/forge-" + forgeVersion + "-installer.jar";
         String versionJarURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/" + forgeVersion + "/forge-" + forgeVersion + "-universal.jar";
+        String forgeVersionMFURL = "http://eyeballcode.github.io/Forge-Libraries/forge-libraries.json";
+
         File librariesFolder = new File(FileUtil.mcLauncherFolder, "libraries");
         File forgeVersionCache = new File(FileUtil.mcLauncherFolder, "forge-version-cache");
         File tmpFolder = new File(FileUtil.mcLauncherFolder, "tmp");
@@ -52,28 +50,28 @@ public class ForgeVersion {
             inputStream.close();
         }
         FileUtil.delete(tmpFolder);
-        forgeData = new JSONObject(new JSONTokener(new FileInputStream(forgeVersionCacheFile)));
         File versionFolder = new File(FileUtil.mcLauncherFolder, "versions");
         versionFolder.mkdirs();
         File versionJARFolder = new File(versionFolder, forgeVersion);
         versionJARFolder.mkdirs();
         File versionJAR = new File(versionJARFolder, forgeVersion + ".jar");
         Downloader.download(new URL(versionJarURL), versionJAR);
-        JSONArray libraries = forgeData.getJSONObject("versionInfo").getJSONArray("libraries");
-        LibrarySet librarySet = new LibrarySet(libraries);
-        File libraryFolder = new File(FileUtil.mcLauncherFolder, "libraries");
-        ArrayList<LibraryObject> toDrop = new ArrayList<>();
-        for (LibraryObject object : librarySet.getLibraries()) {
-            if (object.getRawName().equals("net.minecraftforge:forge:" + forgeVersion))
-                toDrop.add(object);
+
+        File forgeVersionData = new File(FileUtil.mcLauncherFolder, "forge-libraries.json");
+        Downloader.download(new URL(forgeVersionMFURL), forgeVersionData);
+
+        JSONObject forgeVersionDataJSON = new JSONObject(new JSONTokener(new FileInputStream(forgeVersionData))).getJSONObject(forgeVersion);
+        for (String libFileName : forgeVersionDataJSON.keySet()) {
+            JSONObject libData = forgeVersionDataJSON.getJSONObject(libFileName);
+            String libRawName = libData.getString("name");
+            String sha1 = libData.getString("sha1");
+            String url = libData.getString("url");
+            LibraryObjectInfo info = new DefaultMCLibraryObject(libRawName, sha1).parseName();
+            File libFolder = new File(new File(new File(librariesFolder, info.getPackageName().replaceAll("\\.", File.separator)), info.getLibraryName()), info.getVersion());
+            libFolder.mkdirs();
+            File libraryFile = new File(libFolder, libFileName);
+            Downloader.sha1Download(new URL(url), libraryFile, sha1, 5);
+            System.out.println("Download " + info.getLibraryName() + " (Forge)");
         }
-        for (LibraryObject object : toDrop)
-            librarySet.drop(object);
-        librarySet.downloadAll(librariesFolder, new Handler<LibraryObject>() {
-            @Override
-            public void handle(LibraryObject object) {
-                System.out.println("Download " + object.parseName().getLibraryName() + " (Forge)");
-            }
-        });
     }
 }

@@ -1,5 +1,6 @@
 package com.modlauncher;
 
+import com.modlauncher.api.game.GameLauncher;
 import com.modlauncher.api.login.LoginHelper;
 import com.modlauncher.api.login.UserProfile;
 import com.modlauncher.api.modpacks.ModPack;
@@ -31,12 +32,14 @@ public class ModLauncher {
         System.out.println(profile);
         ModPack modPack = ModPackLookup.lookupModpackByName("EyePack");
         System.out.println(modPack.getDescription());
-        modPack.getMCVersion().download();
-        modPack.getForgeVersion().download();
+
+//        modPack.getMCVersion().download();
+//        modPack.getForgeVersion().download();
         modPack.downloadMods();
         modPack.setupFolders();
         modPack.setupMods();
         modPack.grabConfigs();
+        GameLauncher.launch(modPack, profile);
     }
 
     private static void login() throws IOException {

@@ -40,4 +40,8 @@ public class MCMod {
         return getName().replaceAll("[^\\w]", "-").replaceAll("--+", "-");
     }
 
+    public String getDownloadLoc() {
+        return data.has("location") ? data.getString("location") : ".";
+    }
+
 }

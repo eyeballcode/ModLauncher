@@ -7,7 +7,7 @@ import java.io.IOException;
 public class ModPackLookup {
 
     public static ModPack lookupModpackByName(String name) throws IOException {
-        return lookupModpackByName(name, "https://eyeballcode.github.io/modpacks.json");
+        return lookupModpackByName(name, "http://eyeball.yeung.online/modpacks.json");
     }
 
     public static ModPack lookupModpackByName(String name, String dataURL) throws IOException {

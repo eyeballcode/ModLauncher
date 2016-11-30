@@ -6,7 +6,6 @@ import com.modlauncher.api.minecraft.MCMod;
 import com.modlauncher.api.minecraft.MCModDownloader;
 import com.modlauncher.api.minecraft.MCModSet;
 import com.modlauncher.api.minecraft.MCVersion;
-import lib.mc.util.ChecksumUtils;
 import lib.mc.util.Downloader;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,7 +14,6 @@ import org.json.JSONTokener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
 
@@ -51,7 +49,8 @@ public class ModPack {
 
     public MCModSet getModList(String version) {
         JSONObject modList = modpackData.getJSONObject("versions").getJSONObject(version).getJSONObject("modlist");
-        return new MCModSet(modList);
+        JSONObject extraMods = modpackData.getJSONObject("versions").getJSONObject(version).getJSONObject("specialMods");
+        return new MCModSet(modList, extraMods);
     }
 
     public void downloadMods() throws IOException {
@@ -99,16 +98,15 @@ public class ModPack {
         File myFolder = new File(new File(modpackFolder, getName()), version);
         File modFolder = new File(myFolder, "mods");
 
-        modFolder.mkdirs();
+        FileUtil.delete(modFolder);
+        modFolder.mkdir();
+
         for (MCMod mod : getModList(version).getMods()) {
             String fileName = mod.getFilename() + "-" + mod.getVersion() + ".jar";
             File modJar = new File(new File(new File(modCache, mod.getFilename()), mod.getVersion()), fileName);
             modJar.getParentFile().mkdirs();
-            File dest = new File(modFolder, fileName);
-            if (dest.exists()) {
-                if (ChecksumUtils.calcSHA1Sum(dest).equals(mod.getJARSHA1())) return;
-                dest.delete();
-            }
+            File dest = new File(new File(modFolder, mod.getDownloadLoc()), fileName);
+            dest.getParentFile().mkdirs();
             FileUtil.copyFile(modJar, dest);
         }
     }

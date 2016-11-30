@@ -16,6 +16,7 @@ public class MCVersionCache {
 
     public static HashMap<String, JSONObject> assetsCache = new HashMap<>();
     public static HashMap<String, JSONArray> libraryCache = new HashMap<>();
+    public static HashMap<String, JSONObject> versionDownloadInfo = new HashMap<>();
     public static JSONObject versionList;
 
     public static void getCache(String version) throws IOException {
@@ -28,7 +29,6 @@ public class MCVersionCache {
             JSONObject versionJSON = (JSONObject) ele_;
             if (versionJSON.getString("id").equals(version)) {
                 versionURL = versionJSON.getString("url");
-
             }
         }
         if (versionURL != null) {
@@ -44,8 +44,10 @@ public class MCVersionCache {
 
         JSONObject assetsCache = new JSONObject(new JSONTokener(new FileInputStream(assetsFile)));
         JSONArray libraryCache = data.getJSONArray("libraries");
+
         MCVersionCache.assetsCache.put(version, assetsCache);
         MCVersionCache.libraryCache.put(version, libraryCache);
+        MCVersionCache.versionDownloadInfo.put(version, data.getJSONObject("downloads"));
     }
 
     private static void loadCache() throws IOException {

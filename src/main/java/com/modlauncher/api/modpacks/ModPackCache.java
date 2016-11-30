@@ -27,22 +27,27 @@ class ModPackCache {
         if (modpackCache.exists()) {
             if (sha1 != null) {
                 String calculatedSHA = ChecksumUtils.calcSHA1Sum(modpackCache);
-                if (calculatedSHA.equals(sha1)) {
-                    try {
-                        modpackIndexCache.put(url, new JSONObject(new JSONTokener(new FileInputStream(modpackCache))));
-                    } catch (JSONException ignored) {
-                        modpackCache.delete();
-                    }
+                if (!calculatedSHA.equals(sha1)) {
+                    Downloader.sha1Download(indexURL, modpackCache, sha1, 5);
                 }
+                try {
+                    modpackIndexCache.put(url, new JSONObject(new JSONTokener(new FileInputStream(modpackCache))));
+                } catch (JSONException ignored) {
+                    modpackCache.delete();
+                }
+
+            } else {
+                modpackCache.delete();
+                Downloader.download(indexURL, modpackCache);
             }
         } else {
             if (sha1 != null) {
                 Downloader.sha1Download(indexURL, modpackCache, sha1, 5);
             } else {
-                modpackCache.delete();
                 Downloader.download(indexURL, modpackCache);
             }
         }
+        System.out.println(modpackCache);
         JSONObject response = new JSONObject(new JSONTokener(new FileInputStream(modpackCache)));
         modpackIndexCache.put(url, response);
     }

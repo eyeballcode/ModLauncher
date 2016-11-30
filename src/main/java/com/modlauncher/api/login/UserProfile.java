@@ -24,4 +24,32 @@ public class UserProfile {
     public String toString() {
         return playerName + "@" + username + "@" + uuid + "@" + accessToken;
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public String getMcUUID() {
+        return mcUUID;
+    }
+
+    public LoginSession getSession() {
+        return session;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
 }
