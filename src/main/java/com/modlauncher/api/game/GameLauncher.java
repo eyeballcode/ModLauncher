@@ -100,23 +100,37 @@ public class GameLauncher {
     private static String generateClassPath(ModPack modpack) throws IOException {
         LibrarySet minecraftLibraries = modpack.getMCVersion().getLibrarySet();
         File libraryFolder = new File(FileUtil.mcLauncherFolder, "libraries");
+
+        JSONObject forgeVersionData = new JSONObject(new JSONTokener(new FileInputStream(new File(FileUtil.mcLauncherFolder, "forge-libraries.json"))));
+        JSONArray librariesToDrop = forgeVersionData.getJSONObject(modpack.getForgeVersion().getForgeVersion()).getJSONArray("dropList");
+        ArrayList<String> drop = new ArrayList<>();
+        for (Object o : librariesToDrop) {
+            String lib = (String) o;
+            drop.add(lib);
+        }
+
+        System.out.println(drop);
+
+
         StringBuilder builder = new StringBuilder();
         for (LibraryObject library : minecraftLibraries.getLibraries()) {
             LibraryObjectInfo info = library.parseName();
+
+            if (drop.contains(library.getRawName())) continue; // Drop it
             File libraryFile = new File(libraryFolder, info.toURL());
             if (!libraryFile.exists()) continue; // Non available natives.
             builder.append(libraryFile.getAbsolutePath()).append(File.pathSeparator);
         }
 
         File forgeDataJSONFile = new File(new File(FileUtil.mcLauncherFolder, "forge-version-cache"), modpack.getForgeVersion().getForgeVersion());
-        JSONArray forgeVersionDataJSON = new JSONObject(new JSONTokener(new FileInputStream(forgeDataJSONFile))).getJSONObject("versionInfo").getJSONArray("libraries");
+        JSONObject forgeLibrariesJSON = new JSONObject(new JSONTokener(new FileInputStream(forgeDataJSONFile))).getJSONObject("versionInfo");
+        JSONArray forgeVersionDataJSON = forgeLibrariesJSON.getJSONArray("libraries");
 
         for (Object e : forgeVersionDataJSON) {
             JSONObject libData = (JSONObject) e;
             String libRawName = libData.getString("name");
             LibraryObjectInfo info = new DefaultMCLibraryObject(libRawName, "").parseName();
             File libraryFile = new File(libraryFolder, info.toURL());
-            System.out.println(libraryFile);
             if (!libraryFile.exists()) continue; // Shouldn't even happen
             builder.append(libraryFile.getAbsolutePath()).append(File.pathSeparator);
         }

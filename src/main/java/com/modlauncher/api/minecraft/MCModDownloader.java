@@ -21,5 +21,4 @@ public class MCModDownloader {
             System.out.println("Download mod " + mod.getName());
         }
     }
-
 }

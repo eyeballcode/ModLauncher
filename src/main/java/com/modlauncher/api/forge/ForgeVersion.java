@@ -29,6 +29,7 @@ public class ForgeVersion {
         String installerDownloadURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/" + forgeVersion + "/forge-" + forgeVersion + "-installer.jar";
         String versionJarURL = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/" + forgeVersion + "/forge-" + forgeVersion + "-universal.jar";
         String forgeVersionMFURL = "http://eyeballcode.github.io/Forge-Libraries/forge-libraries.json";
+        String indexFile = "http://eyeballcode.github.io/Forge-Libraries/index.json";
 
         File librariesFolder = new File(FileUtil.mcLauncherFolder, "libraries");
         File forgeVersionCache = new File(FileUtil.mcLauncherFolder, "forge-version-cache");
@@ -61,7 +62,7 @@ public class ForgeVersion {
         File forgeVersionData = new File(FileUtil.mcLauncherFolder, "forge-libraries.json");
         Downloader.download(new URL(forgeVersionMFURL), forgeVersionData);
 
-        JSONObject forgeVersionDataJSON = new JSONObject(new JSONTokener(new FileInputStream(forgeVersionData))).getJSONObject(forgeVersion);
+        JSONObject forgeVersionDataJSON = new JSONObject(new JSONTokener(new FileInputStream(forgeVersionData))).getJSONObject(forgeVersion).getJSONObject("libraries");
         for (String libFileName : forgeVersionDataJSON.keySet()) {
             JSONObject libData = forgeVersionDataJSON.getJSONObject(libFileName);
             String libRawName = libData.getString("name");

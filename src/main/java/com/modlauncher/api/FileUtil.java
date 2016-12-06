@@ -18,8 +18,8 @@ public class FileUtil {
             case WINDOWS:
                 mcLauncherFolder = new File(new File(new File(homeDir, "APPDATA"), "roaming"), "MCLauncher");
                 break;
-            case MACOSX:
-                mcLauncherFolder = new File(new File(new File(homeDir, "Libraries"), "Application Support"), "MCLauncher");
+            case OSX:
+                mcLauncherFolder = new File(new File(new File(homeDir, "Library"), "Application Support"), "MCLauncher");
                 break;
             default:
                 mcLauncherFolder = new File(homeDir, ".MCLauncher");

@@ -5,6 +5,7 @@ import com.modlauncher.api.login.LoginHelper;
 import com.modlauncher.api.login.UserProfile;
 import com.modlauncher.api.modpacks.ModPack;
 import com.modlauncher.api.modpacks.ModPackLookup;
+import com.modlauncher.api.util.SSLUtilities;
 
 import java.io.Console;
 import java.io.IOException;
@@ -13,6 +14,17 @@ import java.util.Scanner;
 public class ModLauncher {
 
     public static void main(String[] args) throws IOException {
+        if (args.length > 0) {
+            for (String arg : args) {
+                switch(arg) {
+                    case "--no-ssl":
+                        System.out.println("Disabling SSL");
+                        SSLUtilities.trustAllHostnames();
+                        SSLUtilities.trustAllHttpsCertificates();
+                        break;
+                }
+            }
+        }
         UserProfile[] userProfiles = LoginHelper.getProfiles();
         if (userProfiles.length == 0) {
             login();
