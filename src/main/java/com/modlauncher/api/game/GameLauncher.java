@@ -5,16 +5,17 @@ import com.modlauncher.api.login.UserProfile;
 import com.modlauncher.api.modpacks.ModPack;
 import com.modlauncher.api.util.OSHelper;
 import lib.mc.library.*;
+import lib.mc.util.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GameLauncher {
 
@@ -26,54 +27,101 @@ public class GameLauncher {
         File modpackFolder = new File(new File(new File(FileUtil.mcLauncherFolder, "modpack"), modPack.getName()), version);
         ArrayList<String> args = new ArrayList<>();
         args.add("java");
-        args.add("-cp");
 
-        String classPath = generateClassPath(modPack);
-        args.add(classPath);
         final File nativeOutputLib = extractNatives(modPack);
-        args.add("-Djava.library.path=" + nativeOutputLib.getAbsolutePath());
-        args.add("-Duser.dir=" + modpackFolder.getAbsolutePath());
+        args.add("-Djava.library.path=" + nativeOutputLib.getAbsolutePath().replace(" ", "\\ "));
+        args.add("-Duser.dir=" + modpackFolder.getAbsolutePath().replace(" ", "\\ "));
         File forgeDataJSONFile = new File(new File(FileUtil.mcLauncherFolder, "forge-version-cache"), modPack.getForgeVersion().getForgeVersion());
         JSONObject forgeDataJSON = new JSONObject(new JSONTokener(new FileInputStream(forgeDataJSONFile)));
         String mainClass = forgeDataJSON.getJSONObject("versionInfo").getString("mainClass");
 
-        String mcArgs = parseArgs(forgeDataJSON.getJSONObject("versionInfo").getString("minecraftArguments"), modPack, modpackFolder, profile);
+        ArrayList<String> mcArgs = parseArgs(forgeDataJSON.getJSONObject("versionInfo").getString("minecraftArguments"), modPack, modpackFolder, profile);
+
+        args.add("-cp");
+
+        String classPath = generateClassPath(modPack);
+        args.add(classPath);
 
         args.add(mainClass);
 
-        args.addAll(Arrays.asList(mcArgs.split(" ")));
+        args.addAll(mcArgs);
 
-        for (String s : args) System.out.print(s + " ");
-        System.out.println();
+        StringBuilder command = new StringBuilder();
 
+        for (String s : args) command.append(s).append(" ");
+        System.out.println(command);
 
-        ProcessBuilder processBuilder = new ProcessBuilder(args);
+        final File launchFile = new File(FileUtil.mcLauncherFolder, "launch-" + System.currentTimeMillis());
+
+        FileOutputStream fos = new FileOutputStream(launchFile);
+        fos.write(command.toString().getBytes());
+        fos.close();
+
+        switch(Utils.OSUtils.getOS()) {
+            case OSX:
+            case LINUX:
+                Set<PosixFilePermission> perms = new HashSet<>();
+                perms.add(PosixFilePermission.OWNER_EXECUTE);
+                perms.add(PosixFilePermission.OWNER_READ);
+                perms.add(PosixFilePermission.OWNER_WRITE);
+                Files.setPosixFilePermissions(launchFile.toPath(), perms);
+                break;
+        }
+
+        ProcessBuilder processBuilder = new ProcessBuilder(launchFile.getAbsolutePath());
         processBuilder.inheritIO();
         final Process process = processBuilder.start();
         new Thread() {
             @Override
             public void run() {
                 try {
+                    Thread.sleep(1000);
+                    FileUtil.delete(nativeOutputLib);
+                    launchFile.delete();
                     process.waitFor();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
                     FileUtil.delete(nativeOutputLib);
+                    launchFile.delete();
+                    System.exit(0);
                 }
             }
         }.start();
     }
 
-    private static String parseArgs(String string, ModPack modpack, File modFolder, UserProfile profile) {
-        return string.replace("${auth_player_name}", profile.getPlayerName())
-                .replace("${version_name}", modpack.getMCVersion().getVersion())
-                .replace("${game_directory}", modFolder.getAbsolutePath())
-                .replace("${assets_root}", new File(FileUtil.mcLauncherFolder, "assets").getAbsolutePath())
-                .replace("${assets_index_name}", modpack.getMCVersion().getVersion())
-                .replace("${auth_uuid}", profile.getUuid())
-                .replace("${auth_access_token}", profile.getAccessToken())
-                .replace("${user_properties}", "{}")
-                .replace("${user_type}", "Player");
+    private static String parseMCArg(String part, ModPack modpack, File modFolder, UserProfile profile) {
+        switch (part) {
+            case "${auth_player_name}":
+                return profile.getPlayerName();
+            case "${version_name}":
+                return modpack.getMCVersion().getVersion();
+            case "${game_directory}":
+                return modFolder.getAbsolutePath().replace(" ", "\\ ");
+            case "${assets_root}":
+                return new File(FileUtil.mcLauncherFolder, "assets").getAbsolutePath();
+            case "${assets_index_name}":
+                return modpack.getMCVersion().getVersion();
+            case "${auth_uuid}":
+                return profile.getUuid();
+            case "${auth_access_token}":
+                return profile.getAccessToken();
+            case "${user_properties}":
+                return "{}";
+            case "${user_type}":
+                return "mojang";
+            default:
+                return part;
+        }
+    }
+
+    private static ArrayList<String> parseArgs(String string, ModPack modpack, File modFolder, UserProfile profile) {
+        ArrayList<String> parts = new ArrayList<>();
+        for (String part : string.split(" ")) {
+            String parsed = parseMCArg(part, modpack, modFolder, profile);
+            parts.add(parsed);
+        }
+        return parts;
     }
 
     private static File extractNatives(ModPack modpack) throws IOException {
@@ -88,9 +136,11 @@ public class GameLauncher {
             for (File nativeLibFile : currentLibFolder.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
+                    System.out.println(name);
                     return name.endsWith(OSHelper.getOSNativeLibExt());
                 }
             })) {
+                System.out.println(nativeLibFile);
                 FileUtil.copyFile(nativeLibFile, new File(output, nativeLibFile.getName()));
             }
         }
@@ -108,9 +158,6 @@ public class GameLauncher {
             String lib = (String) o;
             drop.add(lib);
         }
-
-        System.out.println(drop);
-
 
         StringBuilder builder = new StringBuilder();
         for (LibraryObject library : minecraftLibraries.getLibraries()) {
@@ -137,7 +184,7 @@ public class GameLauncher {
 
         File versionJar = new File(new File(new File(FileUtil.mcLauncherFolder, "versions"), modpack.getMCVersion().getVersion()), modpack.getMCVersion().getVersion() + ".jar");
         File forgeVersionJar = new File(new File(new File(FileUtil.mcLauncherFolder, "versions"), modpack.getForgeVersion().getForgeVersion()), modpack.getForgeVersion().getForgeVersion() + ".jar");
-        return builder.toString() + versionJar.getAbsolutePath() + File.pathSeparator + forgeVersionJar.getAbsolutePath();
+        return (builder.toString() + versionJar.getAbsolutePath() + File.pathSeparator + forgeVersionJar.getAbsolutePath()).replace(" ", "\\ ");
     }
 
 }

@@ -7,7 +7,7 @@ public class OSHelper {
     public static String getOSNativeLibExt() {
         switch (Utils.OSUtils.getOS()) {
             case WINDOWS: return "dll";
-            case OSX: return "dynlib";
+            case OSX: return "jnilib";
             default: return "so";
         }
     }
